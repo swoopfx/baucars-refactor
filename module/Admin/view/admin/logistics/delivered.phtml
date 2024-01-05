@@ -1,0 +1,110 @@
+<?php
+echo $this->headtitle("Completed Trip");
+
+?>
+
+<section class="page--header">
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-lg-6">
+				<!-- Page Title Start -->
+				<h2 class="page--title h5">Bookings</h2>
+				<!-- Page Title End -->
+
+				<ul class="breadcrumb">
+					<li class="breadcrumb-item"><a href=""></a></li>
+					<li class="breadcrumb-item active"><span>Completed Trips</span></li>
+				</ul>
+			</div>
+
+
+		</div>
+	</div>
+</section>
+
+
+<section class="main--content">
+	<div class="panel">
+		<!-- Records Header Start -->
+		<div class="records--header">
+			<div class="title fa-shopping-bag">
+				<h3 class="h3">
+					Delivered Dispatch
+					<!-- 					 <a href="#" class="btn btn-sm btn-outline-info">Manage -->
+					<!-- 						Products</a> -->
+				</h3>
+				<!-- 				<p>Found Total 1,330 Products</p> -->
+			</div>
+
+			<div class="actions">
+				<!-- 				<form action="#" class="search flex-wrap flex-md-nowrap"> -->
+				<!-- 					<input type="text" class="form-control" placeholder="Product Name..." required> <select name="select" class="form-control"> -->
+				<!-- 						<option value="" selected>Product Category</option> -->
+				<!-- 					</select> -->
+				<!-- 					<button type="submit" class="btn btn-rounded"> -->
+				<!-- 						<i class="fa fa-search"></i> -->
+				<!-- 					</button> -->
+				<!-- 				</form> -->
+
+
+				<!-- 				<a href="#" class="addProduct btn btn-lg btn-rounded btn-warning">Create -->
+				<!-- 					Booking</a> -->
+			</div>
+		</div>
+		<!-- Records Header End -->
+	</div>
+	<div class="row">
+		<?php echo $this->partial("dispatch-menu-list") ?>
+		<div class="col-xl-9">
+			<div class="panel">
+				<div class="panel-heading">
+					<h3 class="panel-title">Booking List</h3>
+
+
+				</div>
+
+				<div class="panel-body">
+					<div class="table-responsive">
+						<table class="table style--2">
+							<thead>
+								<tr>
+
+									<th>BOOKING UID</th>
+									<th>Booking Details</th>
+									<th>Trip Details</th>
+									<th>User Details</th>
+									<th>Status</th>
+									<th>Action</th>
+								</tr>
+							</thead>
+							<tbody>
+								<!-- Table Row Start -->
+								<?php foreach ($data as $booking) : ?>
+									<tr>
+
+									<td><?php echo strtoupper($booking["bookingUid"]) ?></td>
+									<td></td>
+									<td><strong>Booking Class : </strong><?php //echo $booking["bookingClass"]["bookingClass"] ?> <br>
+										<strong>Pick Up time : </strong><?php //echo $booking["bookingClass"]["bookingClass"] ?> <br>
+									</td>
+									<td><strong>Trip Started : </strong><?php echo $this->dateformat($booking["trip"]["started"], IntlDateFormatter::MEDIUM, IntlDateFormatter::MEDIUM) ?> <br>
+									<strong>Trip Ended : </strong><?php echo $this->dateformat($booking["trip"]["ended"], IntlDateFormatter::MEDIUM, IntlDateFormatter::MEDIUM) ?> <br></td>
+									<td><?php //echo $this->myCurrency($booking["status"]['status']) ?></td>
+
+									<!--                                                 <td><span class="text-muted">#BG6R9853lP</span></td> -->
+									<td><a
+										href="<?php echo $this->url("admin/default", ["controller" => "booking", "action" => "view", "id" => $booking["bookingUid"]]) ?>"><i
+											class="fa fa-eye"></i></a></td>
+								</tr>
+								<?php endforeach; ?>
+								<!-- Table Row End -->
+
+
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>

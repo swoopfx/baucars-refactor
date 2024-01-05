@@ -1,0 +1,241 @@
+<?php
+echo $this->headtitle("Cars");
+?>
+<div id="car">
+
+	<section class="page--header">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-lg-6">
+					<!-- Page Title Start -->
+					<h2 class="page--title h5">Cars</h2>
+					<!-- Page Title End -->
+
+					<ul class="breadcrumb">
+						<li class="breadcrumb-item"><a href=""></a></li>
+						<li class="breadcrumb-item active"><span>Cars</span></li>
+					</ul>
+				</div>
+
+
+			</div>
+		</div>
+	</section>
+
+	<div id="vCenteredModal" class="modal fade">
+		<div class="modal-dialog modal-dialog-centered">
+
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Edit Car Detail</h5>
+
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+
+				<div v-if="isEdit">
+					<div class="spinner"></div>
+				</div>
+
+				<div class="modal-body pt-4">
+					<div class="form-group">
+						<label> <span class="label-text">Driver Full Name</span> <input type="text" v-model='car.platNumber' ref="fullname" class="form-control">
+						</label>
+					</div>
+
+					<div class="form-group">
+						<label> <span class="label-text">Driver Email</span> <textarea type="email" v-model="car.description" ref="email" class="form-control"></textarea>
+						</label>
+					</div>
+
+					<div class="form-group">
+						<label>
+							<span v-if="cars.length" class="label-text">Car Make</span>
+							<div class="col-md-12">
+								<select name="select"  class="form-control">
+									<option v-for="carr in cars" :key="carr.id" :value="carr.id">{{carr.carMake}}</option>
+
+								</select>
+						</label>
+					</div>
+				</div>
+
+				<!-- <div class="form-group">
+						<label> <span class="label-text">Driver Phone Number</span> <input type="text" @input="acceptNumber" v-model="phoneNumber" ref="phonenumber" class="form-control">
+						</label>
+					</div>
+
+					<div class="form-group">
+						<label> <span class="label-text">Driver Date of Birth</span> <input type="date" v-model="driver_dob" ref="driver_dob" class="form-control">
+						</label>
+					</div>
+
+					<div class="form-group">
+						<label> <span class="label-text">Driving Since</span> <input type="date" v-model="driving_since" ref="driving_since" class="form-control">
+						</label>
+					</div>
+
+
+
+					<hr>
+
+					<h5>Assign a Car</h5>
+
+					<div class="form-group">
+						<label> <span class="label-text">Car Plate Number</span> <input type="text" v-model="car_platenumber" ref="car_platenumber" placeholder="Car Plate Number" class="form-control">
+						</label>
+					</div>
+
+					<div class="form-group">
+						<label>
+							<span v-if="cars.length" class="label-text">Car Make</span>
+							<div class="col-md-10"> -->
+				<!-- <select name="select" v-model="selectedCar" class="form-control">
+								<option v-for="car in cars" :key="car.id" :value="car.id">{{car.carMake}}</option>
+
+							</select>
+						</label> 
+						</div> 
+					</div> -->
+
+
+
+
+				<!-- <div class="form-group">
+						<label> <span class="label-text">Car Type</span> <input ref="carType" v-model="carType" type="text" class="form-control">
+						</label>
+					</div> -->
+
+
+
+
+
+
+				<button disabled="submitStatus" type="button" value="Submit" class="btn btn-lg btn-block btn-rounded btn-success">Register Now</button>
+
+			</div>
+		</div>
+
+	</div>
+</div>
+
+<section class="main--content">
+	<div class="panel">
+		<!-- Records Header Start -->
+		<div class="records--header">
+			<div class="title fa-shopping-bag">
+				<h3 class="h3">
+					Cars
+					<!-- 					 <a href="#" class="btn btn-sm btn-outline-info">Manage -->
+					<!-- 						Products</a> -->
+				</h3>
+				<!-- 				<p>Found Total 1,330 Products</p> -->
+			</div>
+
+			<div class="actions">
+				<!-- 				<form action="#" class="search flex-wrap flex-md-nowrap"> -->
+				<!-- 					<input type="text" class="form-control" placeholder="Product Name..." required> <select name="select" class="form-control"> -->
+				<!-- 						<option value="" selected>Product Category</option> -->
+				<!-- 					</select> -->
+				<!-- 					<button type="submit" class="btn btn-rounded"> -->
+				<!-- 						<i class="fa fa-search"></i> -->
+				<!-- 					</button> -->
+				<!-- 				</form> -->
+
+
+				<!-- 				<a href="#" class="addProduct btn btn-lg btn-rounded btn-warning"></a> -->
+			</div>
+		</div>
+		<!-- Records Header End -->
+	</div>
+	<div class="row">
+
+		<div class="col-xl-12">
+			<div class="panel">
+				<div class="panel-heading">
+					<h3 class="panel-title">Registered Cars</h3>
+
+
+				</div>
+
+				<div class="panel-body">
+					<div class="table-responsive">
+						<table class="table style--2">
+							<thead>
+								<tr>
+									<th>UID</th>
+									<th>PLATE NUMBER</th>
+									<th>MAKE</th>
+									<th>TYPE</th>
+									<th>Driver</th>
+									<th>Created On</th>
+									<!-- 									<th>Amount Paid</th> -->
+									<th>Action</th>
+								</tr>
+							</thead>
+							<tbody>
+								<!-- Table Row Start -->
+								<?php foreach ($cars as $car) : ?>
+									<tr>
+										<td><?php echo strtoupper($car["carUid"]) ?></td>
+										<td><?php echo strtoupper($car["platNumber"]) ?></td>
+										<td></td>
+										<td><a href="#" class="btn-link"><strong>Motor Make : </strong><?php echo ($car["motorMake"] != NULL ? $car["motorMake"]["carMake"] : "") ?> <br>
+												<strong>Motor Class :</strong><?php echo ($car["motorClass"] != NULL ? $car["motorClass"]["motorClass"] : "") ?></td>
+										<td><?php echo $car["driver"]["user"]["fullName"] ?></td>
+										<td><?php echo $this->dateformat($car["createdOn"], IntlDateFormatter::MEDIUM, IntlDateFormatter::MEDIUM) ?></td>
+
+
+										<!--                                                 <td><span class="text-muted">#BG6R9853lP</span></td> -->
+										<td><a href="#vCenteredModal" data-toggle="modal" @click="editCar('<?php echo $car["carUid"] ?>')"><i class="fa fa-edit"></i></a></td>
+									</tr>
+								<?php endforeach; ?>
+								<!-- Table Row End -->
+
+
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+</div>
+<script>
+	let car = new Vue({
+		el: "#car",
+		data() {
+			return {
+				isEdit: false,
+				car: {},
+				cars:[],
+			}
+		},
+
+		methods: {
+
+			getCarMake() {
+				axios.get("/controller/driver/allcarsmake").then(res => {
+					this.cars = res.data.data;
+				})
+			},
+
+			editCar(id) {
+				this.isEdit = true;
+				axios.get("/controller/car/get-car/" + id).then(res => {
+					if (res.status == 200) {
+						this.getCarMake()
+						this.isEdit = false;
+						this.car = res.data.car;
+					}
+				}).catch();
+			},
+
+			postEdit(){
+				let formData = new FormData();
+				formData.append()
+				axios.post("controller/car/post-edit").then()
+			}
+		},
+	});
+</script>

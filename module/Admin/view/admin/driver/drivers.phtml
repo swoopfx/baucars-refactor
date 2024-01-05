@@ -1,0 +1,460 @@
+<?php
+echo $this->headtitle("Drivers");
+?>
+
+<?php
+$flashMessenger = $this->flashMessenger()
+	->setMessageOpenFormat('<div%s>
+     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
+         &times;
+     </button>
+     <ul><li>')
+	->setMessageSeparatorString('</li><li>')
+	->setMessageCloseString('</li></ul></div>');
+?>
+<?php echo $flashMessenger->render('error',   array('alert', 'alert-dismissable', 'alert-danger')); ?>
+<?php echo $flashMessenger->render('info',    array('alert', 'alert-dismissable', 'alert-info')); ?>
+<?php echo $flashMessenger->render('default', array('alert', 'alert-dismissable', 'alert-warning')); ?>
+<?php echo $flashMessenger->render('success', array('alert', 'alert-dismissable', 'alert-success')); ?>
+
+<div id="drivers">
+	<section class="page--header">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-lg-6">
+					<!-- Page Title Start -->
+					<h2 class="page--title h5">DRIVERS</h2>
+					<!-- Page Title End -->
+
+					<!-- 				<ul class="breadcrumb"> -->
+					<!-- 					<li class="breadcrumb-item"><a href="ecommerce.html">Ecommerce</a></li> -->
+					<!-- 					<li class="breadcrumb-item active"><span>Products</span></li> -->
+					<!-- 				</ul> -->
+				</div>
+
+				<!--                         <div class="col-lg-6"> -->
+				<!-- Summary Widget Start -->
+				<!--                             <div class="summary--widget"> -->
+				<!--                                 <div class="summary--item"> -->
+				<!--                                     <p class="summary--chart" data-trigger="sparkline" data-type="bar" data-width="5" data-height="38" data-color="#009378">2,9,7,9,11,9,7,5,7,7,9,11</p> -->
+
+				<!--                                     <p class="summary--title">This Month</p> -->
+				<!--                                     <p class="summary--stats text-green">2,371,527</p> -->
+				<!--                                 </div> -->
+
+				<!--                                 <div class="summary--item"> -->
+				<!--                                     <p class="summary--chart" data-trigger="sparkline" data-type="bar" data-width="5" data-height="38" data-color="#e16123">2,3,7,7,9,11,9,7,9,11,9,7</p> -->
+
+				<!--                                     <p class="summary--title">Last Month</p> -->
+				<!--                                     <p class="summary--stats text-orange">2,527,371</p> -->
+				<!--                                 </div> -->
+				<!--                             </div> -->
+				<!-- Summary Widget End -->
+				<!--                         </div> -->
+			</div>
+		</div>
+	</section>
+
+
+	<div id="vCenteredModal" class="modal fade">
+		<div class="modal-dialog modal-dialog-centered">
+
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Register A Driver</h5>
+
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+
+				<div class="modal-body pt-4">
+					<div class="form-group">
+						<label> <span class="label-text">Driver Full Name</span> <input type="text" v-model='fullname' ref="fullname" class="form-control">
+						</label>
+					</div>
+
+					<div class="form-group">
+						<label> <span class="label-text">Driver Phone Number</span> <input type="text" @input="acceptNumber" v-model="phoneNumber" ref="phonenumber" class="form-control">
+						</label>
+					</div>
+
+					<div class="form-group">
+						<label> <span class="label-text">Driver Email</span> <input type="email" v-model="email" ref="email" class="form-control">
+						</label>
+					</div>
+
+					<div class="form-group">
+						<label> <span class="label-text">Driver Date of Birth</span> <input type="date" v-model="driver_dob" ref="driver_dob" class="form-control">
+						</label>
+					</div>
+
+					<div class="form-group">
+						<label> <span class="label-text">Driving Since</span> <input type="date" v-model="driving_since" ref="driving_since" class="form-control">
+						</label>
+					</div>
+
+
+
+					<hr>
+
+					<h5>Assign a Car</h5>
+
+					<div class="form-group">
+						<label> <span class="label-text">Car Plate Number</span> <input type="text" v-model="car_platenumber" ref="car_platenumber" placeholder="Car Plate Number" class="form-control">
+						</label>
+					</div>
+
+					<div class="form-group">
+						<label> <span v-if="cars.length" class="label-text">Car Make</span>
+							<!-- <div class="col-md-10"> --> <select name="select" v-model="selectedCar" class="form-control">
+								<option v-for="car in cars" :key="car.id" :value="car.id">{{car.carMake}}</option>
+
+							</select>
+						</label>
+						<!-- </div> -->
+					</div>
+
+
+					<div class="form-group">
+						<label> <span class="label-text">Car Type</span> <input ref="carType" v-model="carType" type="text" class="form-control">
+						</label>
+					</div>
+
+					<div v-if="isCreating">
+						<img src="/ajax-loader.gif">
+					</div>
+
+
+					<button v-else :disabled="submitStatus" @click="createDriver()" type="button" value="Submit" class="btn btn-lg btn-block btn-rounded btn-success">Register
+						Driver</button>
+
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+
+
+
+	<div id="editDriver" class="modal fade">
+		<div class="modal-dialog modal-dialog-centered">
+
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Edit Driver</h5>
+
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+
+				<div class="modal-body pt-4">
+
+					<div v-if="triggerEdit">
+						<img src="/ajax-loader.gif">
+					</div>
+					<div v-else>
+						<div class="form-group">
+							<label> <span class="label-text">Driver Full Name</span> <input type="text" v-model='driverDetails.fullname' ref="editFullname" class="form-control">
+							</label>
+						</div>
+
+						<div class="form-group">
+							<label> <span class="label-text">Driver Email</span> <input type="email" v-model="driverDetails.email" ref="editEmail" class="form-control">
+							</label>
+						</div>
+
+						<div class="form-group">
+							<label> <span class="label-text">Driver Phone Number</span> <input type="text" @input="acceptNumber" v-model="driverDetails.phoneNumber" ref="editPhonenumber" class="form-control">
+							</label>
+						</div>
+
+
+						<div v-if="isPostEditDriver">
+							<img src="/ajax-loader.gif">
+						</div>
+						<button v-else :disabled="editStatus" @click="postEditDriver()" type="button" value="Submit" class="btn btn-xs btn-block btn-rounded btn-success">Edit Driver</button>
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+
+	<section class="main--content">
+		<div class="panel">
+			<!-- Records Header Start -->
+			<div class="records--header">
+				<div class="title fa-shopping-bag">
+					<h3 class="h3">Registered Drivers</h3>
+					<!-- 					<p>Found Total 1,330 Products</p> -->
+				</div>
+
+				<div class="actions">
+					<!-- 					<form action="#" class="search flex-wrap flex-md-nowrap"> -->
+					<!-- 						<input type="text" class="form-control" placeholder="Product Name..." required> <select name="select" class="form-control"> -->
+					<!-- 							<option value="" selected>Product Category</option> -->
+					<!-- 						</select> -->
+					<!-- 						<button type="submit" class="btn btn-rounded"> -->
+					<!-- 							<i class="fa fa-search"></i> -->
+					<!-- 						</button> -->
+					<!-- 					</form> -->
+
+					<a href="#vCenteredModal" data-toggle="modal" class=" btn btn-lg  btn-rounded btn-warning">ADD DRIVER</a>
+				</div>
+			</div>
+			<!-- Records Header End -->
+		</div>
+
+		<div class="panel">
+			<div class="panel-heading">
+				<h3 class="panel-title">Registered Drivers</h3>
+
+				<div class="dropdown"></div>
+			</div>
+
+			<div class="panel-body">
+				<div class="table-responsive">
+					<table class="table style--2">
+						<thead>
+							<tr>
+
+								<th>Driver UID</th>
+								<th>Driver Details</th>
+								<th>Assinged Cars</th>
+								<th>Driver Status</th>
+								<!--                                                 <th>Tracking No.</th> -->
+								<th>Status</th>
+							</tr>
+						</thead>
+						<tbody>
+
+							<!-- Table Row Start -->
+							<?php
+							if (count($drivers) > 0) :
+								foreach ($drivers as $driver) :
+							?>
+									<tr>
+
+										<td><?php echo strtoupper($driver["diverUid"]) ?></td>
+										<td><strong>Name :</strong><a href="#" class="btn-link"><?php echo $driver["user"]["fullName"] ?></a><br>
+											<strong>Phone :</strong><a href="#" class="btn-link"><?php echo $driver["user"]["phoneNumber"] ?></a><br>
+											<strong>Driving Since :</strong><?php echo $this->dateformat($driver["driverSince"], IntlDateFormatter::MEDIUM) ?>
+										</td>
+										<td>
+											<?php if (count($driver["assisnedCar"]) > 0) : ?>
+												<table class="table style--2">
+													<thead>
+														<tr>
+
+															<th>Plate Number</th>
+															<th>Car Type</th>
+															<th></th>
+
+														</tr>
+													</thead>
+													<tbody>
+														<?php foreach ($driver["assisnedCar"] as $car) : ?>
+															<tr>
+																<td>
+																	<?php echo ($car["platNumber"] != NULL ? $car["platNumber"] : "") ?>
+																</td>
+																<td>
+																	<?php echo ($car["motorMake"] != NULL ? $car["motorMake"]["carMake"] : "") ?>
+																</td>
+																<td><a href="" class="btn btn-block btn-primary">Reassign</a>
+																</td>
+															</tr>
+														<?php endforeach; ?>
+													</tbody>
+												</table>
+											<?php endif; ?>
+										</td>
+										<td><?php
+											$status = "";
+											if ($driver["driverState"]["id"] == 10) {
+												$status = "<span class='label label-success'>{$driver["driverState"]["state"]}</span>";
+											} else if ($driver["driverState"]["id"] == 50) {
+												$status = "<span class='label label-dange'>{$driver["driverState"]["state"]}</span>";
+											} else {
+												$status = "<span class='label label-primary'>{$driver["driverState"]["state"]}</span>";
+											}
+											echo $status;
+											?>
+
+										</td>
+										<!--                                                 <td><span class="text-muted">#BG6R9853lP</span></td> -->
+										<td><a href="#editDriver" @click="editDriver('<?php echo $driver["diverUid"] ?>')" data-toggle="modal"><i class="fa fa-edit"></i> Edit</a> | <a href="#" @click="deleteDriver('<?php echo $driver["id"] ?>')"><i class="fa fa-trash"></i> Delete</a></td>
+									</tr>
+							<?php
+								endforeach;
+							endif;
+
+							?>
+							<!-- Table Row End -->
+
+
+						</tbody>
+					</table>
+
+					<?php echo $this->paginationcontrol($drivers, "sliding", "admin-driver-pagecount"); ?>
+				</div>
+			</div>
+		</div>
+	</section>
+</div>
+
+<script>
+	let driver = new Vue({
+		el: "#drivers",
+		data() {
+			return {
+				isCreating: false,
+				phoneNumber: "",
+				creatingDriver: false,
+				email: "",
+				reg: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,24}))$/,
+				fullname: "",
+				driver_dob: '',
+				driving_since: '',
+				car_platenumber: '',
+				cars: [],
+				selectedCar: "",
+				carType: '',
+
+
+				isEditDriver: false,
+				triggerEdit: false,
+				driverDetails: {
+					fullname: "",
+					email: "",
+					phoneNumber: "",
+					uid: ""
+				},
+
+				isPostEditDriver: false,
+
+			}
+		},
+		mounted() {
+			this.getCarMake()
+		},
+
+		computed: {
+			submitStatus() {
+				if (this.phoneNumber == "" || this.fullname == "" || this.driver_dob == "" || this.driving_since == "") {
+					return true;
+				} else {
+					return false;
+				}
+
+
+			},
+			editStatus() {
+				// if (this.$refs.editFullname.value == "" || this.$refs.editEmail.value == "" || this.$refs.editPhonenumber.value == "" || this.driverDetails.uid == "") {
+				// 	return true;
+				// } else {
+				// 	return false;
+				// }
+			},
+
+			isEmailValid() {
+				return this.reg.test(this.email);
+			}
+		},
+
+		methods: {
+			getCarMake() {
+				axios.get("/controller/driver/allcarsmake").then(res => {
+					this.cars = res.data.data;
+				})
+			},
+
+			editDriver(id) {
+				this.triggerEdit = true;
+				axios.get("/controller/driver/getdriver/" + id).then(res => {
+					if (res.status == 200) {
+						this.triggerEdit = false;
+						this.driverDetails.fullname = res.data.data.user.fullName;
+						this.driverDetails.phoneNumber = res.data.data.user.phoneNumber;
+						this.driverDetails.email = res.data.data.user.email;
+						this.driverDetails.uid = res.data.data.diverUid;
+					}
+				}).catch();
+			},
+
+			postEditDriver() {
+				this.isPostEditDriver = true;
+				let formData = new FormData();
+				formData.append("editFullName", this.$refs.editFullname.value);
+				formData.append("editEmail", this.$refs.editEmail.value);
+				formData.append("editPhonenumber", this.$refs.editPhonenumber.value);
+				formData.append("uid", this.driverDetails.uid);
+				axios.post("/controller/driver/posteditdriver", formData).then(res => {
+					if (res.status == 201) {
+						window.location.reload();
+						// this.isPostEditDriver = false;
+					}
+				}).catch(err => {
+					this.isPostEditDriver = false;
+				});
+			},
+
+			createDriver() {
+
+				this.isCreating = true;
+				let formData = new FormData();
+				formData.append("fullname", this.fullname);
+				formData.append("email", this.email);
+				formData.append("phoneNumber", this.phoneNumber);
+				formData.append("driver_dob", this.driver_dob);
+				formData.append("driving_since", this.driving_since);
+				formData.append("selectedCar", this.selectedCar);
+				formData.append("car_platenumber", this.car_platenumber);
+				formData.append("carType", this.carType);
+				axios.post("/controller/driver/createdriver", formData).then(res => {
+					if (res.status == 201) {
+						// this.isCreating = false;
+						window.location.reload();
+					}
+				}).catch(err => {
+					this.isCreating = false;
+					console.log(err.response.data.message);
+
+				});
+			},
+
+			deleteDriver(id) {
+
+				swal({
+					title: "Are you Sure",
+					text: "You are about to delete a driver",
+					icon: "warning",
+					button: "Continue!",
+				}).then(function(isConfirm) {
+					if (isConfirm) {
+						let formData = new FormData();
+						formData.append("id", id);
+						axios.post("/controller/driver/deletedriver", formData).then(res => {
+							if (res.status == 204) {
+								window.location.reload();
+							}
+						}).catch(err => {
+							swal({
+								title: "Error",
+								text: err.response.data.messages,
+								icon: "error",
+								button: "YES"
+							})
+						});
+					}
+				});
+
+			},
+
+			acceptNumber() {
+				var x = this.phoneNumber.replace(/\D/g, '').match(/(\d{0,4})(\d{0,3})(\d{0,4})/);
+				this.phoneNumber = !x[2] ? x[1] : '' + x[1] + '-' + x[2] + (x[3] ? '-' + x[3] : '');
+			}
+		},
+	});
+</script>

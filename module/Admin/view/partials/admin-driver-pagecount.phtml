@@ -1,0 +1,23 @@
+<?php
+if ($this->pageCount > 1) :
+    ?>
+<ul class="pagination justify-content-center">
+ <?php  if(isset($this->previous)):?>
+  <li><a
+		href="<?php  echo $this->url("admin/paginator", array("controller"=>"driver",  "action"=>"drivers", "page"=>$this->previous))?>">
+			<i class="fa fa-angle-left"></i> Previous
+	</a></li>
+  
+  <?php endif;?>
+  
+    |  
+  <?php if (isset($this->next)):?>
+  <li class="page-item"><a
+		href="<?php  echo $this->url("admin/paginator", array("controller"=>"driver",  "action"=>"drivers", "page"=>$this->next))?>">Next
+			<i class="fa fa-angle-right"></i>
+	</a></li>
+  
+  <?php endif;?>
+</ul>
+<?php endif;?>
+

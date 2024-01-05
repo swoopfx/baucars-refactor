@@ -1,0 +1,107 @@
+<?php
+echo $this->headtitle("Canceled Booking");
+
+?>
+
+<section class="page--header">
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-lg-6">
+				<!-- Page Title Start -->
+				<h2 class="page--title h5">Bookings</h2>
+				<!-- Page Title End -->
+
+				<ul class="breadcrumb">
+					<li class="breadcrumb-item"><a href="ecommerce.html"></a></li>
+					<li class="breadcrumb-item active"><span>Products</span></li>
+				</ul>
+			</div>
+
+
+		</div>
+	</div>
+</section>
+
+
+<section class="main--content">
+	<div class="panel">
+		<!-- Records Header Start -->
+		<div class="records--header">
+			<div class="title fa-shopping-bag">
+				<h3 class="h3">
+					Cancelled Booking
+					<!-- 					 <a href="#" class="btn btn-sm btn-outline-info">Manage -->
+					<!-- 						Products</a> -->
+				</h3>
+				<!-- 				<p>Found Total 1,330 Products</p> -->
+			</div>
+
+			<div class="actions">
+				<form action="#" class="search flex-wrap flex-md-nowrap">
+					<input type="text" class="form-control" placeholder="Product Name..." required> 
+					<select name="select" class="form-control">
+						<option value="" selected>Product Category</option>
+					</select>
+					<button type="submit" class="btn btn-rounded">
+						<i class="fa fa-search"></i>
+					</button>
+				</form>
+
+
+				<a href="#" class="addProduct btn btn-lg btn-rounded btn-warning">Create
+					Booking</a>
+			</div>
+		</div>
+		<!-- Records Header End -->
+	</div>
+	<div class="row">
+		<?php echo $this->partial("booking-menu-list") ?>
+		<div class="col-xl-9">
+			<div class="panel">
+				<div class="panel-heading">
+					<h3 class="panel-title">Cancelled Booking List</h3>
+
+
+				</div>
+
+				<div class="panel-body">
+					<div class="table-responsive">
+						<table class="table style--2">
+							<thead>
+								<tr>
+
+									<th>BOOKING UID</th>
+									<th>Customer Name</th>
+									<th>Booking Info</th>
+									<th>Status</th>
+									<th>Amount Paid</th>
+									<th>Action</th>
+								</tr>
+							</thead>
+							<tbody>
+								<!-- Table Row Start -->
+								<?php foreach ($allBooking as $booking) : ?>
+									<tr>
+
+										<td><?php echo strtoupper($booking["bookingUid"]) ?></td>
+										<td><?php echo $booking["user"]["fullName"] ?></td>
+										<td><a href="#" class="btn-link"><strong>Booking Class : </strong><?php echo $booking["bookingClass"]["bookingClass"] ?> <br>
+												</td>
+										<td><?php echo $this->statusHelper($booking["status"]) ?></td>
+										<td><?php echo $this->myCurrency($booking["transaction"]['amount']) ?></td>
+
+										<!--                                                 <td><span class="text-muted">#BG6R9853lP</span></td> -->
+										<td><a href="<?php echo $this->url("admin/default", ["controller" => "booking", "action" => "view", "id" => $booking["bookingUid"]]) ?>"><i class="fa fa-eye"></i></a></td>
+									</tr>
+								<?php endforeach; ?>
+								<!-- Table Row End -->
+
+
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>

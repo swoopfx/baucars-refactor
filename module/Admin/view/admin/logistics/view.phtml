@@ -1,0 +1,381 @@
+<?php
+echo $this->headtitle("Logistics Info");
+// var_dump($data);
+?>
+<?php
+$flashMessenger = $this->flashMessenger()
+	->setMessageOpenFormat('<div%s>
+     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
+         &times;
+     </button>
+     <ul><li>')
+	->setMessageSeparatorString('</li><li>')
+	->setMessageCloseString('</li></ul></div>');
+?>
+<?php echo $flashMessenger->render('error',   array('alert', 'alert-dismissable', 'alert-danger')); ?>
+<?php echo $flashMessenger->render('info',    array('alert', 'alert-dismissable', 'alert-info')); ?>
+<?php echo $flashMessenger->render('default', array('alert', 'alert-dismissable', 'alert-warning')); ?>
+<?php echo $flashMessenger->render('success', array('alert', 'alert-dismissable', 'alert-success')); ?>
+
+<div id="viewbooking">
+	<section class="page--header">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-lg-6">
+					<!-- Page Title Start -->
+					<h2 class="page--title h5">View Logistics</h2>
+					<!-- Page Title End -->
+
+
+				</div>
+
+			</div>
+		</div>
+	</section>
+
+	<div id="processModal" class="modal fade">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Process Logistics</h5>
+
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+
+				<div class="modal-body pt-4">
+					<div class="form-group">
+						<label> <span class="label-text">Available Drivers</span> <select v-if="inactiveDivers.length" @change="onChangeDriver()" v-model="selectDriver" name="select" class="form-control">
+								<option>-- Select Rider --</option>
+								<option v-for="driver in inactiveDivers" :value="driver.id">{{driver.user.fullName}}</option>
+
+							</select>
+							<p v-else> No Driver</p>
+						</label>
+					</div>
+
+
+					<button type="button" v-if="showAssignButton" :disabled="isAssigningDriver" @click="assignDriver()" class="btn btn-sm btn-block btn-rounded btn-success">
+						<div v-if="isAssigningDriver">Processing...</div>
+						<div v-else>Assign Driver</div>
+					</button>
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<section class="main--content">
+		<div class="panel">
+			<!-- Records Header Start -->
+			<div class="records--header">
+				<div class="title fa-shopping-bag">
+					<h3 class="h3">
+						Booking Details <?php //if ($data->getAssignedDriver() == null) : 
+										?><a href="#processModal" data-toggle="modal" class="btn btn-sm btn-outline-info">Process Dispatch</a><?php //endif; 
+																																				?>
+					</h3>
+				</div>
+			</div>
+			<!-- Records Header End -->
+		</div>
+		<?php if ($data["status"]["id"] == 10 || $data["status"]["id"] == 20 || $data["status"]["id"] == 60) : ?>
+			<div class="panel">
+				<div class="row">
+					<div class="col-md-6 col-xs-12">
+						<button @click="deliveredDispatch()" :disabled="isDeliverProcessing" class="btn btn-block btn-success">
+							<div v-if="isDeliverProcessing">...processing</div>
+							<div v-else>Delivered Package</div>
+						</button>
+					</div>
+					<div class="col-md-6 col-xs-12">
+						<button @click="cancelDispatch()" :disabled="isCancelProcessing" class="btn btn-block btn-danger">
+							<div v-if="isCancelProcessing">...processing</div>
+							<div v-else>Cancel Dispatch</div>
+						</button>
+					</div>
+				</div>
+			</div>
+		<?php endif ?>
+		<div class="panel">
+
+			<!-- View Order Start -->
+			<div class="records--body">
+				<div class="title">
+					<h6 class="h6">
+						LOGISTICS REF # <?php echo strtoupper($data["logisticsUid"]) ?><span class="text-lightergray"> - <?php echo $this->dateformat($data["createdOn"], IntlDateFormatter::MEDIUM, IntlDateFormatter::NONE, "en_us") ?>
+						</span>
+						<button class="btn btn-danger"><?php echo $data["status"]["status"] ?></button>
+					</h6>
+				</div>
+
+				<!-- Tabs Nav Start -->
+				<ul class="nav nav-tabs">
+					<li class="nav-item"><a href="#tab01" data-toggle="tab" class="nav-link active">Overview</a></li>
+					<li class="nav-item"><a href="#tab02" data-toggle="tab" class="nav-link">BOOKING STATUS</a></li>
+				</ul>
+				<!-- Tabs Nav End -->
+
+				<!-- Tab Content Start -->
+				<div class="tab-content">
+					<!-- Tab Pane Start -->
+					<div class="tab-pane fade show active" id="tab01">
+						<div class="row">
+							<div class="col-md-6">
+								<h4 class="subtitle">Order Information</h4>
+
+								<table class="table table-simple">
+									<tbody>
+										<tr>
+											<td>LOGISTICS REF:</td>
+											<th><a href="#" class="btn-link"><?php echo strtoupper($data["logisticsUid"]) ?></a>
+											</th>
+										</tr>
+										<tr>
+											<td>PICK UP Address</td>
+											<th><?php echo $data["pickUpAddress"] ?></th>
+										</tr>
+										<tr>
+											<td>Destination Address</td>
+											<th><?php echo $data["destination"] ?></th>
+										</tr>
+										<tr>
+											<td>Quantity</td>
+											<th><?php echo $data["quantity"] ?></th>
+										</tr>
+										<tr>
+											<td>Item:</td>
+											<th><?php echo $data["itemName"] ?></th>
+										</tr>
+										<tr>
+											<td>Delivery Note</td>
+											<th><span class="label label-success"><?php echo $data["deliveryNote"] ?></span></th>
+										</tr>
+										<tr>
+											<td>Service Type</td>
+											<th><span class="label label-warning"><?php echo $data["serviceType"]["type"] ?></span></th>
+										</tr>
+										<tr>
+											<td>Amount Payed:</td>
+											<th><?php echo $this->myCurrency($data["logisticsTransaction"]["amount"]) ?></th>
+										</tr>
+										<tr>
+											<td>Payment Method:</td>
+											<th><?php echo $data["paymentmode"]["mode"] ?></th>
+										</tr>
+										<tr>
+											<td>Trip type</td>
+											<th><?php //echo $this->isReturnTripHelper($data->getIsReturnTrip())
+												?></th>
+										</tr>
+
+									</tbody>
+								</table>
+							</div>
+
+							<div class="col-md-6">
+								<h4 class="subtitle">Users Information</h4>
+
+								<table class="table table-simple">
+									<tbody>
+
+										<tr>
+											<td>Users ID:</td>
+											<th><?php echo strtoupper($data["user"]["userUid"]) ?></th>
+										</tr>
+										<tr>
+											<td>Users Name:</td>
+											<th><?php echo $data["user"]["fullName"] ?></th>
+										</tr>
+										<tr>
+											<td>User Email</td>
+											<th><?php  echo $data["user"]["email"] 
+												?></th>
+										</tr>
+										<tr>
+											<td>Users Phone</td>
+											<th><?php  echo $data["user"]["phoneNumber"] 
+												?></th>
+										</tr>
+										<tr>
+											<td>Registered On</td>
+											<th><?php //echo $this->dateformat($data["user"]["registrationDate"], IntlDateFormatter::FULL, IntlDateFormatter::NONE) 
+												?></th>
+										</tr>
+
+										<!-- 										<tr> -->
+										<!-- 											<td>Users Staus:</td> -->
+										<!-- 											<th>0123 1234 123</th> -->
+										<!-- 										</tr> -->
+										<tr>
+											<td>Users Last Login</td>
+											<th><?php //echo $this->dateformat($data->getUser()->getLastlogin()->getLastlogin(), IntlDateFormatter::FULL, IntlDateFormatter::NONE) 
+												?></th>
+										</tr>
+
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+					<!-- Tab Pane End -->
+
+					<!-- Tab Pane Start -->
+					<div class="tab-pane fade" id="tab02">
+						<div class="row">
+							<div class="col-md-6">
+								<h4 class="subtitle">Assigned Driver</h4>
+								<?php if ($data["assignedRider"] != null) : 
+								?>
+								<table class="table table-simple">
+									<tbody>
+										<tr>
+											<td>Driver Name</td>
+											<th><?php echo $data["assignedRider"]["user"]["fullName"] 
+												?></th>
+										</tr>
+										<tr>
+											<td>Driver ID</td>
+											<th><?php echo strtoupper($data["assignedRider"]["user"]["userUid"]) 
+												?></th>
+										</tr>
+										<tr>
+											<td>Driver Phone Number</td>
+											<th><?php echo strtoupper($data["assignedRider"]["user"]["phoneNumber"]) 
+												?></th>
+										</tr>
+										
+									</tbody>
+								</table>
+								<?php endif; 
+								?>
+							</div>
+
+
+						</div>
+					</div>
+					<!-- Tab Pane End -->
+				</div>
+				<!-- Tab Content End -->
+			</div>
+			<!-- View Order End -->
+		</div>
+	</section>
+</div>
+<script>
+	let booking = new Vue({
+		el: "#viewbooking",
+		data() {
+			return {
+				inactiveDivers: [],
+				selectDriver: "",
+				showAssignButton: false,
+				dispatchId: <?php echo $data['id'] ?>,
+
+				isAssigningDriver: false,
+				isCancelProcessing: false,
+				isDeliverProcessing: false,
+			}
+		},
+
+		mounted() {
+			this.getAllAinactiveDrivers()
+		},
+
+		methods: {
+			getAllAinactiveDrivers() {
+				axios.get("/controller/riders/inactiveriders").then(res => {
+					if (res.status == 200) {
+						this.inactiveDivers = res.data.data;
+					}
+				});
+			},
+
+			onChangeDriver() {
+				if (this.selectDriver != "") {
+					this.showAssignButton = true;
+				}
+			},
+
+			assignDriver() {
+				console.log(this.selectDriver);
+				if (this.selectDriver == "-- Select Rider --") {
+					swal({
+						title: "Error",
+						text: "Please select a rider",
+						icon: "error",
+						button: "Continue!",
+					});
+				} else {
+					this.isAssigningDriver = true;
+					let formData = new FormData();
+					formData.append("rider", this.selectDriver);
+					formData.append("dispatchId", this.dispatchId);
+					axios.post('/controller/riders/assignrider', formData).then(res => {
+						if (res.status == 201) {
+							window.location.reload();
+						}
+					});
+				}
+			},
+
+			cancelDispatch() {
+				this.isCancelProcessing = true;
+
+				let id = this.dispatchId;
+				swal({
+					title: "Are you Sure",
+					text: "You are about to cancel Dispatch",
+					icon: "warning",
+					button: "Continue!",
+				}).then(function(isConfirm) {
+					if (isConfirm) {
+						let formData = new FormData();
+						formData.append("id", id);
+						axios.post("/controller/logistics/canceld-dispatcth", formData).then(res => {
+							if (res.status == 202) {
+								window.location.replace("/controller/logistics/index");
+							}
+						})
+					}
+				}).finally(
+					res => {
+						this.isCancelProcessing = false;
+					}
+				);
+
+
+
+			},
+
+			deliveredDispatch() {
+				this.isDeliverProcessing = true;
+ let id = this.dispatchId;
+
+				swal({
+					title: "Are you Sure",
+					text: "You are about to close this service, A notification would be sent to te customer",
+					icon: "warning",
+					button: "Continue!",
+				}).then(function(isConfirm) {
+					if (isConfirm) {
+						console.log(id);
+						let formData = new FormData();
+						formData.append("id", id);
+						axios.post("/controller/logistics/delievered-dispatch", formData).then(res => {
+							if (res.status == 201) {
+								window.location.reload();
+							}
+						})
+					}
+				}).finally(
+					res => {
+						this.isDeliverProcessing = false;
+					}
+				);
+
+			}
+
+		},
+	});
+</script>

@@ -1,0 +1,330 @@
+<?php
+echo $this->headtitle("Booking");
+
+?>
+<?php
+$flashMessenger = $this->flashMessenger()
+    ->setMessageOpenFormat('<div%s>
+     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
+         &times;
+     </button>
+     <ul><li>')
+    ->setMessageSeparatorString('</li><li>')
+    ->setMessageCloseString('</li></ul></div>');
+?>
+<?php echo $flashMessenger->render('error',   array('alert', 'alert-dismissable', 'alert-danger')); ?>
+<?php echo $flashMessenger->render('info',    array('alert', 'alert-dismissable', 'alert-info')); ?>
+<?php echo $flashMessenger->render('default', array('alert', 'alert-dismissable', 'alert-warning')); ?>
+<?php echo $flashMessenger->render('success', array('alert', 'alert-dismissable', 'alert-success')); ?>
+
+<div id="viewbooking">
+	<section class="page--header">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-lg-6">
+					<!-- Page Title Start -->
+					<h2 class="page--title h5">Booking View</h2>
+					<!-- Page Title End -->
+
+
+				</div>
+
+			</div>
+		</div>
+	</section>
+
+	<div id="processModal" class="modal fade">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Process Booking</h5>
+
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+
+				<div class="modal-body pt-4">
+					<div class="form-group">
+						<label> <span class="label-text">Available Drivers</span> <select
+							v-if="inactiveDivers.length" @change="onChangeDriver()"
+							v-model="selectDriver" name="select" class="form-control">
+								<option v-for="driver in inactiveDivers" :value="driver.id">{{driver.user.fullName}}</option>
+
+						</select>
+						<p v-else> No Driver</p>
+						</label>
+					</div>
+
+
+					<button type="button" v-if="showAssignButton"
+						:disabled="isAssigningDriver" @click="assignDriver()"
+						class="btn btn-sm btn-block btn-rounded btn-success">
+						<div v-if="isAssigningDriver">Processing...</div>
+						<div v-else>Assign Driver</div>
+					</button>
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<section class="main--content">
+		<div class="panel">
+			<!-- Records Header Start -->
+			<div class="records--header">
+				<div class="title fa-shopping-bag">
+					<h3 class="h3">
+						Booking Details <?php if ($data->getAssignedDriver() == null) : ?><a
+							href="#processModal" data-toggle="modal"
+							class="btn btn-sm btn-outline-info">Process Booking</a><?php endif; ?>
+					</h3>
+				</div>
+			</div>
+			<!-- Records Header End -->
+		</div>
+
+		<div class="panel">
+
+			<!-- View Order Start -->
+			<div class="records--body">
+				<div class="title">
+					<h6 class="h6">
+						BOOKING REF # <?php echo strtoupper($data->getBookingUid()) ?><span
+							class="text-lightergray"> - <?php echo $this->dateformat($data->getCreatedOn(), IntlDateFormatter::MEDIUM, IntlDateFormatter::NONE, "en_us") ?>
+						</span>
+						<button class="btn btn-danger"><?php echo $data->getStatus()->getStatus() ?></button>
+					</h6>
+				</div>
+
+				<!-- Tabs Nav Start -->
+				<ul class="nav nav-tabs">
+					<li class="nav-item"><a href="#tab01" data-toggle="tab"
+						class="nav-link active">Overview</a></li>
+					<li class="nav-item"><a href="#tab02" data-toggle="tab"
+						class="nav-link">BOOKING STATUS</a></li>
+				</ul>
+				<!-- Tabs Nav End -->
+
+				<!-- Tab Content Start -->
+				<div class="tab-content">
+					<!-- Tab Pane Start -->
+					<div class="tab-pane fade show active" id="tab01">
+						<div class="row">
+							<div class="col-md-6">
+								<h4 class="subtitle">Order Information</h4>
+
+								<table class="table table-simple">
+									<tbody>
+										<tr>
+											<td>BOOKING REF:</td>
+											<th><a href="#" class="btn-link"><?php echo strtoupper($data->getBookingUid()) ?></a>
+											</th>
+										</tr>
+										<tr>
+											<td>PICK UP Address</td>
+											<th><?php echo $data->getPickUpAddress() ?></th>
+										</tr>
+										<tr>
+											<td>Destination Address</td>
+											<th><?php echo $data->getDestination() ?></th>
+										</tr>
+										<tr>
+											<td>Booking Pick Up</td>
+											<th><?php echo $this->dateformat($data->getPickupDate(), IntlDateFormatter::LONG, IntlDateFormatter::SHORT, "en_us") ?></th>
+										</tr>
+										<tr>
+											<td>Booking End On:</td>
+											<th><?php //echo $this->dateformat($data->getEndTime(), IntlDateFormatter::LONG, IntlDateFormatter::SHORT, "en_us") ?></th>
+										</tr>
+										<tr>
+											<td>Booking TYpe</td>
+											<th><span class="label label-success"><?php //echo $data->getBookingType()->getBookingType() ?></span></th>
+										</tr>
+										<tr>
+											<td>Service Type</td>
+											<th><span class="label label-warning"><?php echo $data->getBookingClass()->getBookingClass() ?></span></th>
+										</tr>
+										<tr>
+											<td>Amount Payed:</td>
+											<th><?php echo ($data->getTransaction() == NULL ? "Cash Trip" :$this->myCurrency($data->getTransaction()->getAmount())) ?></th>
+										</tr>
+										<tr>
+											<td>Payment Method:</td>
+											<th><?php echo ($data->getTransaction() == NULL ? "Cash Trip" : "Credit Card" )?></th>
+										</tr>
+										<tr>
+											<td>Trip type</td>
+											<th><?php echo $this->isReturnTripHelper($data->getIsReturnTrip())?></th>
+										</tr>
+										
+									</tbody>
+								</table>
+							</div>
+
+							<div class="col-md-6">
+								<h4 class="subtitle">Users Information</h4>
+
+								<table class="table table-simple">
+									<tbody>
+
+										<tr>
+											<td>Users ID:</td>
+											<th><?php echo strtoupper($data->getUser()->getUserUid()) ?></th>
+										</tr>
+										<tr>
+											<td>Users Name:</td>
+											<th><?php echo $data->getUser()->getFullName() ?></th>
+										</tr>
+										<tr>
+											<td>User Email</td>
+											<th><?php echo $data->getUser()->getEmail() ?></th>
+										</tr>
+										<tr>
+											<td>Users Phone</td>
+											<th><?php echo $data->getUser()->getPhoneNumber() ?></th>
+										</tr>
+										<tr>
+											<td>Registered On</td>
+											<th><?php echo $this->dateformat($data->getUser()->getRegistrationDate(), IntlDateFormatter::FULL, IntlDateFormatter::NONE) ?></th>
+										</tr>
+
+										<tr>
+											<td>Users Staus:</td>
+											<th>0123 1234 123</th>
+										</tr>
+										<tr>
+											<td>Users Last Login</td>
+											<th><?php echo $this->dateformat($data->getUser()->getLastlogin()->getLastlogin(), IntlDateFormatter::FULL, IntlDateFormatter::NONE) ?></th>
+										</tr>
+
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+					<!-- Tab Pane End -->
+
+					<!-- Tab Pane Start -->
+					<div class="tab-pane fade" id="tab02">
+						<div class="row">
+							<div class="col-md-6">
+								<h4 class="subtitle">Assigned Driver</h4>
+								<?php if ($data->getAssignedDriver() != null) : ?>
+									<table class="table table-simple">
+									<tbody>
+										<tr>
+											<td>Driver Name</td>
+											<th><?php echo $data->getAssignedDriver()->getUser()->getFullName() ?></th>
+										</tr>
+										<tr>
+											<td>Driver ID</td>
+											<th><?php echo strtoupper($data->getAssignedDriver()->getDiverUid()) ?></th>
+										</tr>
+										<tr>
+											<td>Driving Since</td>
+											<th><?php echo ($data->getAssignedDriver()->getDriverSince() != "" ? $this->dateformat($data->getAssignedDriver()->getDriverSince(), IntlDateFormatter::MEDIUM) : "") ?></th>
+										</tr>
+									</tbody>
+								</table>
+								<?php endif; ?>
+							</div>
+
+							<div class="col-md-6">
+								<h4 class="subtitle">Car Details</h4>
+								<?php
+        
+        if ($data->getAssignedDriver() != null) :
+            if ($data->getAssignedDriver()->getAssisnedCar() != null) :
+                $cars = $data->getAssignedDriver()->getAssisnedCar();
+                // var_dump($cars);
+                // var_dump(count($cars));
+                foreach ($cars as $car) :
+                    
+                    ?>
+								
+										<table class="table table-simple">
+									<tbody>
+										<tr>
+											<td>Plate Number</td>
+											<th><?php echo ($car->getPlatNumber() != null ? $car->getPlatNumber() : "") ?></th>
+										</tr>
+										<tr>
+											<td>Motor Type</td>
+											<th><?php echo ($car->getMotorMake() != null ? $car->getMotorMake()->getCarMake()  : "") ?></th>
+										</tr>
+										<tr>
+											<td>Car Model:</td>
+											<th><?php echo ($car->getMotorName() != null ? $car->getMotorName() : "") ?></th>
+										</tr>
+
+									</tbody>
+								</table>
+								<?php
+                endforeach
+                ;
+								endif;
+								endif;
+            
+        
+        ?>
+
+							</div>
+						</div>
+					</div>
+					<!-- Tab Pane End -->
+				</div>
+				<!-- Tab Content End -->
+			</div>
+			<!-- View Order End -->
+		</div>
+	</section>
+</div>
+<script>
+	let booking = new Vue({
+		el: "#viewbooking",
+		data() {
+			return {
+				inactiveDivers: [],
+				selectDriver: "",
+				showAssignButton: false,
+				bookingId: <?php echo $data->getId() ?>,
+
+				isAssigningDriver: false,
+			}
+		},
+
+		mounted() {
+			this.getAllAinactiveDrivers()
+		},
+
+		methods: {
+			getAllAinactiveDrivers() {
+				axios.get("/controller/driver/inactivedriver").then(res => {
+					if (res.status == 200) {
+						this.inactiveDivers = res.data.drivers
+					}
+				});
+			},
+
+			onChangeDriver() {
+				if (this.selectDriver != "") {
+					this.showAssignButton = true;
+				}
+			},
+
+			assignDriver() {
+			
+				this.isAssigningDriver = true;
+				let formData = new FormData();
+				formData.append("driver", this.selectDriver);
+				formData.append("bookingId", this.bookingId);
+				axios.post('/controller/driver/assigndriver', formData).then(res => {
+					if (res.status == 201) {
+						window.location.reload();
+					}
+				});
+			}
+
+		},
+	});
+</script>

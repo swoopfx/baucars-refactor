@@ -1,0 +1,473 @@
+<?php
+echo $this->headtitle("Booking");
+?>
+<?php
+$flashMessenger = $this->flashMessenger()
+	->setMessageOpenFormat('<div%s>
+     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
+         &times;
+     </button>
+     <ul><li>')
+	->setMessageSeparatorString('</li><li>')
+	->setMessageCloseString('</li></ul></div>');
+?>
+<?php echo $flashMessenger->render('error',   array('alert', 'alert-dismissable', 'alert-danger')); ?>
+<?php echo $flashMessenger->render('info',    array('alert', 'alert-dismissable', 'alert-info')); ?>
+<?php echo $flashMessenger->render('default', array('alert', 'alert-dismissable', 'alert-warning')); ?>
+<?php echo $flashMessenger->render('success', array('alert', 'alert-dismissable', 'alert-success')); ?>
+
+
+<section class="page--header">
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-lg-6">
+				<!-- Page Title Start -->
+				<h2 class="page--title h5">In Transait Dispatch</h2>
+				<!-- Page Title End -->
+
+				<ul class="breadcrumb">
+					<li class="breadcrumb-item"><a href=""></a></li>
+					<li class="breadcrumb-item active"><span></span></li>
+				</ul>
+			</div>
+
+
+		</div>
+	</div>
+</section>
+<div id="bookingBoard">
+
+	<section class="main--content">
+		<div class="panel">
+			<!-- Records Header Start -->
+			<div class="records--header">
+				<div class="title fa-shopping-bag">
+					<h3 class="h3">
+						In Transit Dispatch
+						<!-- 					 <a href="#" class="btn btn-sm btn-outline-info">Manage -->
+						<!-- 						Products</a> -->
+					</h3>
+					<!-- 				<p>Found Total 1,330 Products</p> -->
+				</div>
+
+				<div class="actions">
+					<!-- 				<form action="#" class="search flex-wrap flex-md-nowrap"> -->
+					<!-- 					<input type="text" class="form-control" placeholder="Product Name..." required> <select name="select" class="form-control"> -->
+					<!-- 						<option value="" selected>Product Category</option> -->
+					<!-- 					</select> -->
+					<!-- 					<button type="submit" class="btn btn-rounded"> -->
+					<!-- 						<i class="fa fa-search"></i> -->
+					<!-- 					</button> -->
+					<!-- 				</form> -->
+
+
+					<!-- <a href="#" class="addProduct btn btn-lg btn-rounded btn-warning">Create
+					Booking</a> -->
+				</div>
+			</div>
+			<!-- Records Header End -->
+		</div>
+		<div class="row">
+			<?php echo $this->partial("dispatch-menu-list") ?>
+			<div class="col-xl-9">
+				<div class="panel">
+					<div class="panel-heading">
+						<h3 class="panel-title">Dispatch</h3>
+
+
+					</div>
+
+					<div class="panel-body">
+						<div class="col-12">
+							<div class="form-group">
+								<label>Pick Up Address</label>
+								<input type="text" id="autocomplete" class="form-control" placeholder="Lagos Airport">
+								<div id="map"></div>
+							</div>
+
+							<div class="form-group">
+								<label>Destination Address</label>
+								<input type="text" id="destination" class="form-control" placeholder="Lagos Airport">
+								<div id="map"></div>
+							</div>
+							<div class="row">
+
+								<div class="col-6">
+									<div class="form-group">
+										<button @click="getDispatchDetails()" :disabled="isRequestinDetails" class="btn btn-success btn-block">
+											<div v-if="isRequestinDetails">...Processing</div>
+											<div v-else>Request Details</div>
+										</button>
+									</div>
+								</div>
+
+								<div class="col-6">
+									<div class="form-group">
+										<button @click="getDispatchDetails()" :disabled="isRequestinDetails" class="btn btn-danger btn-block">
+											<div v-if="isRequestinDetails">...Processing</div>
+											<div v-else>Reset</div>
+										</button>
+									</div>
+								</div>
+
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+
+	<section v-if="isShowDetails" class="main--content">
+
+		<div class="row">
+
+			<div class="col-xl-6">
+				<div class="panel">
+					<div class="panel-heading">
+						<h3 class="panel-title">Dispatch Details </h3>
+					</div>
+
+					<div class="panel-body">
+						<div class="table-responsive">
+							<table class="table style--2">
+								<thead>
+									<tr>
+
+										<th>Calculated Price</th>
+										<th>Promo Price</th>
+										<th>Calculate Distance</th>
+										<th>Pickup Address</th>
+										<th>Destination Address</th>
+
+									</tr>
+								</thead>
+								<tbody>
+									<!-- Table Row Start -->
+
+									<tr>
+
+										<td> &#8358; {{dispatchDetails.price}}</td>
+										<td> &#8358; {{dispatchDetails.discountPrice}} at {{dispatchDetails.promoValue}}%</td>
+
+										<td>{{dispatchDetails.distance}}</td>
+										<td>{{dispatchDetails.pickAddress}}</td>
+										<td>{{dispatchDetails.destinationAddress}}</td>
+
+									</tr>
+
+									<!-- Table Row End -->
+
+
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-xl-6">
+				<div class="panel">
+					<div class="panel-heading">
+						<h3 class="panel-title">Dispatch Request Form</h3>
+
+
+					</div>
+
+					<div class="panel-body">
+						<div class="col-12">
+
+							<div class="form-group">
+								<label>Customer/Sender</label>
+								<input type="text" @input="searchuser()" v-model="usersearch" class="form-control" placeholder="08092929292">
+								<div v-if="userSearchResult.length">
+									<ul class="connected list no2" style="border: 1px solid black">
+										<li v-for="result in userSearchResult" @click="selectUser(result)">{{result.fullName}}</li>
+									</ul>
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label>Receiver Phone Number</label>
+								<input type="text" class="form-control" v-model="recipientNumber" placeholder="08092929292">
+
+							</div>
+
+							<div class="form-group">
+								<label>Item Name</label>
+								<input type="text" class="form-control" v-model="item_name" placeholder="Letter Parcel">
+
+							</div>
+
+							<div class="form-group">
+								<label>Item Quantity</label>
+								<input type="number" v-model="quantity"class="form-control">
+
+							</div>
+
+							<div class="form-group">
+								<label>Amount Payable</label>
+								<input type="number" v-model="dispatchDetails.price" ref="amountPaid" class="form-control">
+
+							</div>
+
+
+							<div class="form-group">
+								<label>Note</label>
+								<textarea class="form-control" ref="note"></textarea>
+
+
+							</div>
+
+							<div class="row">
+
+								<div class="col-12">
+									<div class="form-group">
+										<button @click="createDispatch()" :disabled="isSubmittingFormRequest" class="btn btn-success btn-block">
+											<div v-if="isSubmittingFormRequest">...Processing</div>
+											<div v-else>Request Details</div>
+										</button>
+									</div>
+								</div>
+
+
+
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+</div>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBobkXMM-uzqQLM5pqs_n7prJKJJ4-JK5I&callback=initMap&libraries=places&v=weekly" defer></script>
+
+<script>
+	function initMap() {
+		const map = new google.maps.Map(document.getElementById("map"), {
+			zoom: 4,
+			center: {
+				lat: -33,
+				lng: 151
+			},
+			zoom: 8,
+			zoomControl: false
+		});
+
+		// Create the autocomplete object, restricting the search predictions to
+		// geographical location types.
+		autocomplete = new google.maps.places.Autocomplete(
+			document.getElementById("autocomplete"), {
+				// types: ["geocode"],
+				componentRestrictions: {
+					'country': ['ng']
+				},
+				fields: ['place_id', 'geometry', 'formatted_address']
+			}
+		);
+
+		destination = new google.maps.places.Autocomplete(
+			document.getElementById("destination"), {
+				// types: ["geocode"],
+				componentRestrictions: {
+					'country': ['ng']
+				},
+				fields: ['place_id', 'geometry', 'formatted_address', "address_components", "icon", "name"]
+			}
+		);
+		// When the user selects an address from the drop-down
+		// zoom to the select location and add a marker.
+		autocomplete.addListener("place_changed", addCustomerLocation);
+		destination.addListener("place_changed", addDestinationLocation);
+	}
+
+	function addCustomerLocation() {
+		// Get the place details from the autocomplete object.
+		place = autocomplete.getPlace();
+		// console.log(place);
+
+
+		var lat = place.geometry.location.lat();
+		var lon = place.geometry.location.lng();
+
+
+
+		bookingBoards.pickUpAddress = place.formatted_address;
+
+		// bookingBoards.destinationAddress= 
+		bookingBoards.pickUpLongitude = lat;
+
+		bookingBoards.pickUpLatitude = lon;
+
+		bookingBoards.pickUpPlaceId = place.place_id;
+
+
+		// cutomerboard.pickUpTime:
+
+	}
+
+	function addDestinationLocation() {
+		dropOff = destination.getPlace();
+
+
+		var dropLat = dropOff.geometry.location.lat();
+		var dropLong = dropOff.geometry.location.lng();
+
+		bookingBoards.destinationAddress = dropOff.formatted_address;
+		bookingBoards.destinationLongitude = dropLat;
+		bookingBoards.destinationLatitude = dropLong;
+		bookingBoards.destinationPlaceId = dropOff.place_id;
+	}
+
+
+	let bookingBoards = new Vue({
+		el: "#bookingBoard",
+		data() {
+			return {
+				isDeleting: false,
+				destinationAddress: "",
+				destinationLongitude: "",
+				destinationLatitude: "",
+				destinationPlaceId: "",
+				pickUpLatitude: "",
+				pickUpLongitude: "",
+				pickUpPlaceId: "",
+				pickUpAddress: "",
+				recipientNumber:"",
+				quantity: 0,
+				item_name: "No Name",
+				service_type: 10,
+				delivery_type: 10,
+				usersearch: "",
+				userSearchResult: [],
+				selectedUser: "",
+				selectedUserId: "",
+				isRequestinDetails: false,
+				isSubmittingFormRequest: false,
+				systemPrice: 0,
+				manualprice: 0,
+				bauTxRef:"",
+				isDispacthForm: false,
+				isShowDetails: false,
+
+				dispatchDetails: {},
+			}
+		},
+		methods: {
+			createDispatch() {
+				this.isSubmittingFormRequest = true;
+				if (this.selectedUser == "" && this.$refs.amountPaid.value == 0) {
+
+					swal({
+						title: "Empty required field",
+						text: "Pease fill the required fields",
+						icon: "error",
+						button: "Continue!",
+					});
+				} else {
+					this.isRequestinDetails = true;
+					let formData = new FormData();
+					formData.append("pickUpPlaceId", this.pickUpPlaceId);
+					formData.append("destinationPlaceId", this.destinationPlaceId);
+					formData.append("pickAddress", this.pickUpAddress);
+					formData.append("destinationAddress", this.destinationAddress);
+					formData.append("pickupLat", this.pickUpLatitude);
+					formData.append("pickupLong", this.pickUpLongitude);
+					formData.append("destinationLat", this.destinationLatitude);
+					formData.append("destinationLong", this.destinationLongitude);
+					formData.append("quantity", this.quantity);
+					formData.append("item_name", this.item_name);
+					formData.append("payment_mode", 10);
+					formData.append("service_type", this.service_type);
+					formData.append("delivery_type", this.delivery_type);
+					formData.append("recipientNumber", this.recipientNumber);
+					formData.append("note", this.$refs.note.value);
+					formData.append("amountPayed", this.$refs.amountPaid.value);
+					formData.append("txRef", this.bauTxRef);
+					formData.append("price", this.$refs.amountPaid.value)
+					formData.append("status", "success");
+					formData.append("user", this.selectedUserId);
+					axios.post("/controller/logistics/create-manual-dispatch", formData).then((result) => {
+						if (result.status == 201) {
+							window.location.href = "/controller/logistics/index";
+						}
+
+					}).catch((err) => {
+
+					}).finally(err => {
+						this.isSubmittingFormRequest = false;
+					});
+				}
+			},
+
+			resetForm() {
+				// used to reset form
+
+			},
+			selectUser(result) {
+				this.userSearchResult = [];
+				this.usersearch = result.fullName + "(" + result.phoneNumber + ")";
+				this.selectUser = result.fullName;
+				this.selectedUserId = result.id;
+			},
+			getDispatchDetails() {
+				if (this.destinationPlaceId == "" && this.pickUpPlaceId == "") {
+
+					swal({
+						title: "Empty required field",
+						text: "Pease fill the required fields",
+						icon: "error",
+						button: "Continue!",
+					});
+				} else {
+					this.isRequestinDetails = true;
+					let formData = new FormData();
+					formData.append("pickUpPlaceId", this.pickUpPlaceId);
+					formData.append("destinationPlaceId", this.destinationPlaceId);
+					formData.append("pickAddress", this.pickUpAddress);
+					formData.append("destinationAddress", this.destinationAddress);
+					formData.append("pickupLat", this.pickUpLatitude);
+					formData.append("pickupLong", this.pickUpLongitude);
+					formData.append("destinationLat", this.destinationLatitude);
+					formData.append("destinationLong", this.destinationLongitude);
+					formData.append("quantity", this.quantity);
+					formData.append("item_name", this.item_name);
+					formData.append("service_type", this.service_type);
+					formData.append("delivery_type", this.delivery_type);
+					axios.post("/controller/logistics/dispatchdetails", formData).then((result) => {
+						if (result.status == 200) {
+							this.isDispacthForm = true;
+							this.isShowDetails = true;
+							this.manualprice = result.data.data.price;
+							this.bauTxRef = result.data.data.bauTxRef;
+							this.dispatchDetails = result.data.data;
+						}
+
+					}).catch((err) => {
+
+					}).finally(err => {
+						this.isRequestinDetails = false;
+					});
+				}
+
+			},
+			searchuser() {
+				if (this.usersearch.length > 3) {
+					axios.get("/controller/logistics/searchforuser/" + this.usersearch).then((result) => {
+						this.userSearchResult = result.data.data;
+					}).catch((err) => {
+
+					}).finally(
+						() => {
+
+						}
+					);
+				}
+			}
+		},
+	});
+</script>

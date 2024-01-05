@@ -1,0 +1,117 @@
+<?php echo $this->doctype(); ?>
+
+<html lang="en">
+<head>
+<meta charset="utf-8">
+        <?php echo $this->headTitle('BAU CARS '. $this->translate('Welcome Aboard'))->setSeparator(' - ')->setAutoEscape(false) ?>
+
+        <?php
+        
+        echo $this->headMeta()
+            ->appendName('viewport', 'width=device-width, initial-scale=1.0')
+            ->appendHttpEquiv('X-UA-Compatible', 'IE=edge')?>
+
+        <!-- Le styles -->
+        <?php
+        
+        echo $this->headLink(array(
+            'rel' => 'shortcut icon',
+            'type' => 'image/vnd.microsoft.icon',
+            'href' => $this->basePath() . '/img/favicon.ico'
+        ))
+            ->prependStylesheet($this->basePath('assets/css/responsive.css'))
+            ->prependStylesheet($this->basePath('assets/style.css'))
+            ->prependStylesheet($this->basePath('assets/css/reset.css'))
+            ->prependStylesheet($this->basePath('assets/css/font-awesome.css'))
+            ->prependStylesheet($this->basePath('assets/css/plugins/gijgo.css'))
+            ->prependStylesheet($this->basePath('assets/css/plugins/owl.carousel.min.css'))
+            ->prependStylesheet($this->basePath('assets/css/plugins/magnific-popup.css'))
+            ->prependStylesheet($this->basePath('assets/css/plugins/slicknav.min.css'))
+            ->prependStylesheet($this->basePath('assets/css/bootstrap.min.css'))?>
+                      
+
+        <!-- Scripts -->
+        <?php
+        
+        echo $this->headScript()
+            ->prependFile("https://unpkg.com/sweetalert/dist/sweetalert.min.js")
+            ->prependFile("https://cdn.jsdelivr.net/npm/vue-toast-notification@0.6.2/dist/index.min.js")
+            ->prependFile($this->basePath('js/axios.min.js'))
+            ->prependFile($this->basePath('js/vue.js'))
+            ->prependFile($this->basePath('js/bootstrap.min.js'))
+            ->prependFile($this->basePath('js/jquery.min.js'))
+            ->prependFile($this->basePath('js/respond.min.js'), 'text/javascript', array(
+            'conditional' => 'lt IE 9'
+        ))
+            ->prependFile($this->basePath('js/html5shiv.js'), 'text/javascript', array(
+            'conditional' => 'lt IE 9'
+        ));
+        ?>
+
+    </head>
+<body class="loader-active">
+	<!--== Preloader Area Start ==-->
+	<div class="preloader">
+		<div class="preloader-spinner">
+						<div class="loader-content"> 
+							<img src="assets/img/preloader.gif" alt="JSOFT"> 
+						</div> 
+		</div>
+	</div>
+	<!--== Preloader Area End ==-->
+
+	<!--== Header Area Start ==-->
+	<?php  echo $this->partial("layout/header"); ?>
+	<!--== Header Area End ==-->
+
+	
+
+	<?php  echo $this->content ?>
+
+	
+	<!--== Footer Area Start ==-->
+	<?php  echo $this->partial("layout/footer"); ?>
+	<!--== Footer Area End ==-->
+
+	<!--== Scroll Top Area Start ==-->
+	<div class="scroll-top">
+		<img src="assets/img/scroll-top.png" alt="JSOFT">
+	</div>
+	<!--== Scroll Top Area End ==-->
+
+	<!--=======================Javascript============================-->
+	<!--=== Jquery Min Js ===-->
+	<script src="/assets/js/jquery-3.2.1.min.js"></script>
+	<!--=== Jquery Migrate Min Js ===-->
+	<script src="/assets/js/jquery-migrate.min.js"></script>
+	<!--=== Popper Min Js ===-->
+	<script src="/assets/js/popper.min.js"></script>
+	<!--=== Bootstrap Min Js ===-->
+	<script src="/assets/js/bootstrap.min.js"></script>
+	<!--=== Gijgo Min Js ===-->
+	<script src="/assets/js/plugins/gijgo.js"></script>
+	<!--=== Vegas Min Js ===-->
+	<script src="assets/js/plugins/vegas.min.js"></script>
+	<!--=== Isotope Min Js ===-->
+	<script src="/assets/js/plugins/isotope.min.js"></script>
+	<!--=== Owl Caousel Min Js ===-->
+	<script src="/assets/js/plugins/owl.carousel.min.js"></script>
+	<!--=== Waypoint Min Js ===-->
+	<script src="/assets/js/plugins/waypoints.min.js"></script>
+	<!--=== CounTotop Min Js ===-->
+	<script src="/assets/js/plugins/counterup.min.js"></script>
+	<!--=== YtPlayer Min Js ===-->
+<script src="assets/js/plugins/mb.YTPlayer.js"></script>
+	<!--=== Magnific Popup Min Js ===-->
+	<script src="/assets/js/plugins/magnific-popup.min.js"></script>
+	<!--=== Slicknav Min Js ===-->
+	<script src="/assets/js/plugins/slicknav.min.js"></script>
+
+	<!--=== Mian Js ===-->
+	<script src="/assets/js/main.js"></script>
+	
+	
+	
+        <?php echo $this->inlineScript() ?>
+    </body>
+</html>

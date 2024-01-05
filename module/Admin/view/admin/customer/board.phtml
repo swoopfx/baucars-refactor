@@ -1,0 +1,240 @@
+<?php
+echo $this->headtitle("Customers");
+?>
+<div id="customerb">
+	<section class="page--header">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-lg-6">
+					<!-- Page Title Start -->
+					<h2 class="page--title h5">Customer</h2>
+
+				</div>
+
+
+			</div>
+		</div>
+	</section>
+
+	<!-- Modal Start -->
+	<div id="formInModal" class="modal fade">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Register Customer</h5>
+
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+
+				<div class="modal-body pt-4">
+
+					<div class="form-group">
+						<label>
+							<span class="label-text">Full Name</span>
+							<input type="text" v-model='fullname' ref="fullname" required placeholder="Enter Your Fullname" class="form-control">
+						</label>
+					</div>
+
+					<div class="form-group">
+						<label>
+							<span class="label-text">Phone Number</span>
+							<input type="text" v-model="phoneNumber" @input="acceptNumber" ref="phoneNumber" name="phone" placeholder="Enter Phone Number" class="form-control">
+						</label>
+					</div>
+
+					<div class="form-group">
+						<label>
+							<span class="label-text">Email Address</span>
+							<input type="email" v-model="email" ref="email" placeholder="Enter Your Email..." class="form-control">
+						</label>
+					</div>
+
+
+					<button type="button" :disabled="isCreatingCustomer" class="btn btn-sm btn-rounded btn-success" @click="createCustomer()">
+						<div v-if="isCreatingCustomer">Processing</div>
+						<div v-else>Create User</div>
+					</button>
+
+					<button type="button" class="btn btn-sm btn-rounded btn-outline-secondary" data-dismiss="modal">Cancel</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Modal End -->
+	<section class="main--content">
+		<div class="panel">
+			<!-- Records Header Start -->
+			<div class="records--header">
+				<div class="title fa-shopping-bag">
+					<h3 class="h3">
+						Registered Customer <a href="#formInModal" data-toggle="modal" class="btn btn-sm btn-outline-info">Register A Customer</a>
+					</h3>
+					<!-- <p>Found Total 1,330 Products</p> -->
+				</div>
+
+				<div class="actions">
+					<form action="#" class="search flex-wrap flex-md-nowrap">
+						<input type="text" class="form-control" placeholder="Product Name..." required>
+						<button type="submit" class="btn btn-rounded">
+							<i class="fa fa-search"></i>
+						</button>
+					</form>
+
+
+				</div>
+			</div>
+			<!-- Records Header End -->
+		</div>
+
+		<div class="panel">
+			<!-- Records List Start -->
+			<div class="table-responsive">
+				<table class="table style--2">
+					<thead>
+						<tr>
+							<th>ID</th>
+
+							<th>Customer Name</th>
+							<th>Category</th>
+							<th>Registered On</th>
+							<th>Last Login</th>
+
+							<th>Status</th>
+							<th class="not-sortable">Actions</th>
+						</tr>
+					</thead>
+					<tbody>
+						<?php foreach ($customers as $customer) : ?>
+							<tr>
+								<td><a href="#" class="btn-link"><?php echo strtoupper($customer["userUid"]) ?></a></td>
+
+								<td><a href="#" class="btn-link"><?php echo $customer["fullName"] ?></a></td>
+								<td><a href="#" class="btn-link"><?php echo $customer["phoneNumber"] ?></a></td>
+								<td><?php echo $this->dateformat($customer["registrationDate"], IntlDateFormatter::MEDIUM, IntlDateFormatter::MEDIUM) ?></td>
+								<td><?php echo $this->dateformat($customer["lastlogin"]["lastlogin"], IntlDateFormatter::MEDIUM, IntlDateFormatter::MEDIUM) ?></td>
+
+								<td><?php echo $this->userStateHelper($customer["state"]) ?></td>
+								<td>
+									<div class="dropleft">
+										<a href="#" class="btn-link" data-toggle="dropdown"><i class="fa fa-ellipsis-v"></i></a>
+
+										<div class="dropdown-menu">
+											<a class="dropdown-item" href="<?php echo $this->url("admin/default", ["controller" => "customer", "action" => "view", "id" => $customer["userUid"]]) ?>" class="dropdown-item">View</a>
+											<a href="<?php echo $this->url("admin/default", ["controller" => "customer", "action" => "edit", "id" => $customer["userUid"]]) ?>" class="dropdown-item">Edit</a>
+											<a @click="disableCustomer('<?php echo $customer["fullName"] ?>', <?php echo $customer["id"] ?>)" href="#" class="dropdown-item">Disable</a>
+										</div>
+									</div>
+								</td>
+							</tr>
+						<?php endforeach; ?>
+					</tbody>
+				</table>
+			</div>
+			<!-- Records List End -->
+		</div>
+	</section>
+</div>
+<script>
+	let customerb = new Vue({
+		el: "#customerb",
+		data() {
+			return {
+				isCreatingCustomer: false,
+				// isEmailValid: false,
+				phoneNumber: "",
+				email: "",
+				fullname: "",
+				reg: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,24}))$/,
+
+			}
+		},
+		computed: {
+			// submitStatus() {
+			// 	if (this.phoneNumber == "" || this.email == "" || this.fullname == "" || !this.isEmailValid) {
+			// 		return true;
+			// 	} else {
+			// 		return false;
+			// 	}
+
+
+			// },
+
+			isEmailValid() {
+				return this.reg.test(this.email);
+			}
+		},
+		methods: {
+			acceptNumber() {
+				var x = this.phoneNumber.replace(/\D/g, '').match(/(\d{0,4})(\d{0,3})(\d{0,4})/);
+				this.phoneNumber = !x[2] ? x[1] : '' + x[1] + '-' + x[2] + (x[3] ? '-' + x[3] : '');
+			},
+			disableCustomer(name, id) {
+
+
+				swal({
+					title: "Disable Customer",
+					text: "Are you sure you want to disable " + name,
+					icon: "warning",
+					button: "Continue!",
+				}).then(function(isConfirm) {
+					if (isConfirm) {
+						let formData = new FormData();
+						formData.append("userId", id);
+						axios.post("/controller/customer/disablecustomer", formData).then(res => {
+							if (res.status == 201) {
+								window.location.reload();
+							}
+						}).catch(err => {
+
+						});
+					}
+				});
+			},
+
+			createCustomer() {
+				if (this.phoneNumber == "" || this.email == "" || this.fullname == "") {
+					swal({
+								title: "Ohh No!",
+								text: "Your form is invalid",
+								icon: "error",
+								button: "Continue!",
+							}).then(res => {
+								// location.reload();
+							});
+				} else {
+
+
+					this.isCreatingCustomer = true;
+					let formData = new FormData();
+					formData.append("phoneNumber", this.phoneNumber);
+					formData.append("email", this.email);
+					formData.append("fullname", this.fullname);
+					// formData.append("password", this.password);
+
+					axios.post("/controller/customer/creatcustomer", formData).then(res => {
+						if (res.status == 201) {
+							this.isCreatingCustomer = false;
+							swal({
+								title: "Great job!",
+								text: "You have successfully registered a customer",
+								icon: "success",
+								button: "Continue!",
+							}).then(res => {
+								location.reload();
+							});
+						}
+					}).catch(err => {
+						this.isCreatingCustomer = false;
+						swal({
+								title: "Ohh No!",
+								text: err.response.data.message,
+								icon: "error",
+								button: "Continue!",
+							})
+					});
+				}
+
+			}
+		},
+	});
+</script>

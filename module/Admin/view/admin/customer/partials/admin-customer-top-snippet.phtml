@@ -1,0 +1,73 @@
+<?php
+?>
+
+<!-- Panel Start -->
+<div id="topdetail" class="panel profile-cover">
+	<div class="profile-cover__img">
+		<img src="/assets/img/avatars/01_150x150.png" alt="">
+		<h3 class="h3"><?php echo $user->getFullName() ?></h3>
+	</div>
+
+	<div class="profile-cover__action" data-bg-img="/assets/img/covers/01_800x150.jpg" data-overlay="0.3">
+		<a href="<?php echo $this->url("admin/default", ["controller"=>"customer", "action"=>"edit", "id"=>$user->getUserUid()]) ?>" class="btn btn-rounded btn-info">
+			<i class="fa fa-edit"></i> <span>Edit</span>
+		</a>
+
+		<a href="<?php echo $this->url("admin/default", ["controller"=>"customer", "action"=>"view", "id"=>$user->getUserUid()])?>" class="btn btn-rounded btn-info">
+			<i class="fa fa-eye"></i> <span>View</span>
+		</a>
+	</div>
+
+	<div class="profile-cover__info">
+		<ul class="nav">
+			<li><strong>{{initiatedBooking}}</strong>Initiated </li>
+			<li><strong>{{activeBooking}}</strong>Active</li>
+			<li><strong>{{cancelBooking}}</strong>Canceled </li>
+		</ul>
+	</div>
+</div>
+<!-- Panel End -->
+
+<script>
+	let topdetail = new Vue({
+		el: "#topdetail",
+		data() {
+			return {
+				user: '<?php echo $user->getId() ?>',
+				initiatedBooking: 0,
+				activeBooking: 0,
+				cancelBooking: 0,
+			}
+		},
+
+		mounted() {
+			this.getInitiatedCount(this.user); 
+			this.getActiveCount(this.user);
+			this.getCanceledCount(this.user);
+		},
+		
+		methods: {
+			getInitiatedCount(id){
+				axios.get("/controller/customer/getInitiatedCount/"+id).then(res=>{
+					if(res.status == 200){
+						this.initiatedBooking = res.data.data;
+					}
+				}).catch()
+			},
+			getActiveCount(id){
+				axios.get("/controller/customer/getActiveCount/"+id).then(res=>{
+					if(res.status == 200){
+						this.activeBooking = res.data.data;
+					}
+				}).catch()
+			},
+			getCanceledCount(id){
+				axios.get("/controller/customer/getCancelCount/"+id).then(res=>{
+					if(res.status == 200){
+						this.cancelBooking = res.data.data;
+					}
+				}).catch()
+			}
+		},
+	});
+</script>

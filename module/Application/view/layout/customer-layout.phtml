@@ -1,0 +1,232 @@
+<?php echo $this->doctype(); ?>
+
+<html lang="en">
+<head>
+<meta charset="utf-8">
+        <?php echo $this->headTitle('BAU CARS '. $this->translate('Welcome Aboard'))->setSeparator(' - ')->setAutoEscape(false) ?>
+
+        <?php
+        
+        echo $this->headMeta()
+            ->appendName('viewport', 'width=device-width, initial-scale=1.0')
+            ->appendHttpEquiv('X-UA-Compatible', 'IE=edge')?>
+
+        <!-- Le styles -->
+<script
+	src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"></script>
+<script>
+          WebFont.load({
+            google: {"families":["Montserrat:400,500,600,700","Noto+Sans:400,700"]},
+            active: function() {
+                sessionStorage.fonts = true;
+            }
+          });
+        </script>
+<!-- Favicon -->
+<link rel="apple-touch-icon" sizes="180x180"
+	href="assets/img/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32"
+	href="assets/img/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16"
+	href="assets/img/favicon-16x16.png">
+        <?php
+        
+        echo $this->headLink(array(
+            'rel' => 'shortcut icon',
+            'type' => 'image/vnd.microsoft.icon',
+            'href' => $this->basePath() . '/img/favicon.ico'
+        ))
+        
+        ->prependStylesheet("https://cdn.jsdelivr.net/npm/vue-toast-notification/dist/theme-default.css")
+            ->prependStylesheet($this->basePath('admin/assets/css/owl-carousel/owl.theme.min.css'))
+            ->prependStylesheet($this->basePath('admin/assets/css/owl-carousel/owl.carousel.min.css'))
+            ->prependStylesheet($this->basePath('admin/assets/vendors/css/base/elisyam-1.5.min.css'))
+            ->prependStylesheet($this->basePath('admin/assets/vendors/css/base/bootstrap.min.css'))?>
+                      
+
+        <!-- Scripts -->
+        <?php
+        
+        echo $this->headScript()
+//         ->prependFile("https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js")
+        ->prependFile("js/jquery-3.6.0.min.js")
+        ->prependFile("https://unpkg.com/sweetalert/dist/sweetalert.min.js")
+        ->prependFile("https://cdn.jsdelivr.net/npm/vue-toast-notification@0.6.2/dist/index.min.js")
+        ->prependFile($this->basePath('js/axios.min.js'))
+        ->prependFile($this->basePath('js/vue.js'))
+        ->prependFile($this->basePath('admin/assets/vendors/js/base/jquery.min.js'))
+        ->prependFile($this->basePath('js/respond.min.js'), 'text/javascript', array(
+            'conditional' => 'lt IE 9'
+        ))
+        ->prependFile($this->basePath('js/html5shiv.js'), 'text/javascript', array(
+        'conditional' => 'lt IE 9'
+        ));
+        ?>
+
+    </head>
+<body id="page-top">
+	<!-- Begin Preloader -->
+	<div id="preloader">
+		<div class="canvas">
+			<img src="/assets/img/logo.png" alt="logo" class="loader-logo">
+			<div class="spinner"></div>
+		</div>
+	</div>
+	<!-- End Preloader -->
+
+
+	<div class="db-smarthome page">
+		<!-- Begin Page Content -->
+		<div class="page-content">
+			<div class="content-inner boxed w-100">
+				<div class="container-fluid">
+					<div class="row justify-content-center">
+						<div class="col-xl-9">
+							<!-- Begin Header -->
+							<header class="header">
+								<nav class="navbar">
+									<!-- Begin Topbar -->
+									<div
+										class="navbar-holder d-flex align-items-center align-middle justify-content-between">
+										<!-- Begin Logo -->
+										<div class="navbar-header">
+											<a href="db-smarthome.html" class="navbar-brand">
+												<div class="brand-image brand-big">
+													<img src="/assets/img/logo-black.png" alt="logo"
+														class="logo-big">
+												</div>
+												<div class="brand-image brand-small">
+													<img src="/assets/img/logo-black.png" alt="logo"
+														class="logo-small">
+												</div>
+											</a>
+										</div>
+										<!-- End Logo -->
+										<!-- Begin Navbar Menu -->
+										<ul
+											class="nav-menu list-unstyled d-flex flex-md-row align-items-md-center pull-right">
+											<!-- Begin Notifications -->
+											<!-- <li class="nav-item dropdown"><a id="notifications"
+												rel="nofollow" data-target="#" href="#"
+												data-toggle="dropdown" aria-haspopup="true"
+												aria-expanded="false" class="nav-link"><i
+													class="la la-bell animated infinite swing"></i><span
+													class="badge-pulse"></span></a>
+												<ul aria-labelledby="notifications"
+													class="dropdown-menu notification">
+													<li>
+														<div class="notifications-header-2">
+															<div class="title">Notifications (4)</div>
+														</div>
+													</li>
+													<li><a href="#">
+															<div class="message-icon">
+																<i class="la la-unlock"></i>
+															</div>
+															<div class="message-body">
+																<div class="message-body-heading">Front door unlocked</div>
+																<span class="date">Just now</span>
+															</div>
+													</a></li>
+													<li><a href="#">
+															<div class="message-icon">
+																<i class="la la-wifi"></i>
+															</div>
+															<div class="message-body">
+																<div class="message-body-heading">Wifi connection lost</div>
+																<span class="date">30 minutes ago</span>
+															</div>
+													</a></li>
+													<li><a href="#">
+															<div class="message-icon">
+																<i class="la la-video-camera"></i>
+															</div>
+															<div class="message-body">
+																<div class="message-body-heading">Outdoor camera 3
+																	signal lost</div>
+																<span class="date">1 hour ago</span>
+															</div>
+													</a></li>
+													<li><a href="#">
+															<div class="message-icon">
+																<i class="la la-fire"></i>
+															</div>
+															<div class="message-body">
+																<div class="message-body-heading">Kitchen gas activated
+																</div>
+																<span class="date">2 hours ago</span>
+															</div>
+													</a></li>
+													<li><a rel="nofollow" href="#"
+														class="dropdown-item all-notifications text-center">View
+															All Notifications</a></li>
+												</ul></li> -->
+											<!-- End Notifications -->
+											<!-- User -->
+											<li class="nav-item dropdown"><a id="user" rel="nofollow"
+												data-target="#" href="#" data-toggle="dropdown"
+												aria-haspopup="true" aria-expanded="false" class="nav-link"><i class="la la-cog" ></i></a>
+												<ul aria-labelledby="user" class="user-size dropdown-menu">
+													<!-- <li class="welcome"><a href="#" class="edit-profil"><i
+															class="la la-gear"></i></a> <img
+														src="/admin/assets/img/avatar/avatar-01.jpg" alt="..."
+														class="rounded-circle"></li>
+													<li><a href="pages-profile.html" class="dropdown-item">
+															Profile </a></li>
+													<li><a href="app-mail.html" class="dropdown-item"> Messages
+													</a></li>
+													<li><a href="#" class="dropdown-item no-padding-bottom">
+															Settings </a></li>
+													<li class="separator"></li>
+													<li><a href="pages-faq.html"
+														class="dropdown-item no-padding-top"> Faq </a></li> -->
+													<li><a rel="nofollow" href="<?php echo $this->url("logout")?>"
+														class="dropdown-item logout text-center"><i
+															class="ti-power-off"></i></a></li>
+												</ul></li>
+											<!-- End User -->
+											<!-- Begin Quick Actions -->
+											<!-- <li class="nav-item"><a href="#off-canvas"
+												class="open-sidebar"><i class="la la-cog"></i></a></li> -->
+											<!-- End Quick Actions -->
+										</ul>
+										<!-- End Navbar Menu -->
+									</div>
+									<!-- End Topbar -->
+								</nav>
+							</header>
+							<!-- End Header -->
+
+
+
+							<?php  echo $this->content ?>
+
+						</div>
+					</div>
+				</div>
+				<!-- End Container -->
+				<a href="#" class="go-top"><i class="la la-arrow-up"></i></a>
+
+			</div>
+			<!-- End Content -->
+		</div>
+		<!-- End Page Content -->
+	</div>
+
+
+	<script src="/admin/assets/vendors/js/base/jquery.min.js"></script>
+	<script src="/admin/assets/vendors/js/base/jquery.ui.min.js"></script>
+	<script src="/admin/assets/vendors/js/base/core.min.js"></script>
+	<!-- End Vendor Js -->
+	<!-- Begin Page Vendor Js -->
+	<script src="/admin/assets/vendors/js/nicescroll/nicescroll.min.js"></script>
+	<script src="/admin/assets/vendors/js/owl-carousel/owl.carousel.min.js"></script>
+	<script src="/admin/assets/vendors/js/progress/circle-progress.min.js"></script>
+	<script src="/admin/assets/vendors/js/app/app.min.js"></script>
+	<!-- End Page Vendor Js -->
+	<!-- Begin Page Snippets -->
+	<script src="/admin/assets/js/dashboard/db-smarthome.min.js"></script>
+	<script src="/admin/assets/js/components/music/music-player.min.js"></script>
+        <?php echo $this->inlineScript() ?>
+    </body>
+</html>

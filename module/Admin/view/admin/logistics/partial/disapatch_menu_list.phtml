@@ -1,0 +1,52 @@
+<?php
+?>
+
+<div class="col-xl-3">
+	<div class="panel">
+		<div class="panel-heading">
+			<h3 class="panel-title">MENU</h3>
+
+		</div>
+
+		<div class="todo--panel">
+			<form action="#">
+				<ul class="list-group" data-trigger="scrollbar">
+
+				<li class="list-group-item"><a
+						href="<?php  echo $this->url("admin/default", ["controller"=>"logistics", "action"=>"createdispatch"])?>"><label
+							class="todo--label"> <span>Create Dispatch</span>
+						</label> </a></li>
+
+					<li class="list-group-item"><a
+						href="<?php  echo $this->url("admin/default", ["controller"=>"logistics", "action"=>"index"])?>"><label
+							class="todo--label"> <span>All Dispatch</span>
+						</label> </a></li>
+						
+
+
+					<li class="list-group-item"><a
+						href="<?php  echo $this->url("admin/default", ["controller"=>"logistics", "action"=>"initiated-trip"])?>"><label
+							class="todo--label"> <span>Initiated Dispatch</span>
+						</label> </a></li>
+					<li class="list-group-item"><a
+						href="<?php echo $this->url("admin/default", ["controller"=>"logistics",  "action"=>"in-transit-trip"])?>"><label
+							class="todo--label"> <span>In-Transit Dispatch</span>
+						</label> </a></li>
+						
+						<li class="list-group-item"><a
+						href="<?php echo $this->url("admin/default", ["controller"=>"logistics",  "action"=>"delivered"])?>"><label
+							class="todo--label"> <span>Completed Dispatch</span>
+						</label> </a></li>
+					<li class="list-group-item"><a
+						href="<?php  echo $this->url("admin/default", ["controller"=>"logistics", "action"=>"cancel"])?>">
+							<label class="todo--label"> <span>Canceled Dispatch </span>
+						</label>
+					</a></li>
+
+				</ul>
+
+
+			</form>
+		</div>
+	</div>
+</div>

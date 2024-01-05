@@ -1,0 +1,147 @@
+<?php
+echo $this->headtitle("Edit Customer");
+
+?>
+<?php
+echo $this->headtitle("View Customer Details");
+?>
+<div id="viewCustomer">
+	<section class="page--header">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-lg-6">
+					<!-- Page Title Start -->
+					<h2 class="page--title h5">Customer Profile</h2>
+					<!-- Page Title End -->
+
+					<ul class="breadcrumb">
+						<li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
+						<li class="breadcrumb-item"><span>Customer</span></li>
+						<li class="breadcrumb-item active"><span>Profile</span></li>
+					</ul>
+				</div>
+
+
+			</div>
+		</div>
+	</section>
+
+	<section class="main--content">
+		<div class="row gutter-20">
+			<div class="col-lg-8">
+				<?php echo $this->partial("admin-customer-top", ["user" => $user]) ?>
+
+
+				<!-- Panel Start -->
+				<div class="panel">
+					<div class="panel-heading">
+						<h3 class="panel-title">Edit User</h3>
+					</div>
+
+					<div class="panel-content panel-activity">
+
+						<div id="editUser" class="panel-content">
+							<div class="form-group row">
+								<span class="label-text col-lg-3 col-form-label">Email Address</span>
+
+								<div class="col-lg-9">
+									<input v-model="email" ref="email" type="email" name="email" placeholder="Enter Your Email..." class="form-control">
+
+								</div>
+							</div>
+
+							<div class="form-group row">
+								<span class="label-text col-lg-3 col-form-label">Phone Number</span>
+
+								<div class="col-lg-9">
+									<input v-model="phone" ref="phone" type="text" name="phone" placeholder="" class="form-control">
+
+								</div>
+							</div>
+
+							<div class="form-group row">
+								<span class="label-text col-lg-3 col-form-label">Full Name</span>
+
+								<div class="col-lg-9">
+									<input v-model="fullName" ref="fullname" type="text" name="fullname" placeholder="" class="form-control">
+
+								</div>
+							</div>
+
+
+
+							<div class="row">
+								<div class="col-lg-9 offset-lg-3">
+
+
+									<button type="button" :disabled="isSubmitting" @click="submitEdit()" class="btn btn-sm btn-rounded btn-success">
+										<div v-if="isSubmitting">Processing</div>
+										<div v-else> Submit</div>
+									</button>
+									<button type="button" class="btn btn-sm btn-rounded btn-outline-secondary">Cancel</button>
+								</div>
+							</div>
+						</div>
+
+					</div>
+				</div>
+				<!-- Panel End -->
+
+
+			</div>
+
+
+			<?php echo $this->partial("admin-customer-sidebar"); ?>
+		</div>
+	</section>
+</div>
+
+<script>
+	let editUser = new Vue({
+		el: "#editUser",
+		data() {
+			return {
+				id: '<?php echo $user->getId() ?>',
+				userUid: '<?php echo $user->getUserUid() ?>',
+				email: '<?php echo $user->getEmail() ?>',
+				phone: '<?php echo $user->getPhoneNumber() ?>',
+				fullName: '<?php echo $user->getFullName() ?>',
+
+				isSubmitting: false,
+			}
+		},
+
+		methods: {
+			submitEdit() {
+				let formData = new FormData();
+				formData.append("id", this.id);
+				formData.append("email", this.$refs.email.value);
+				formData.append("phone", this.$refs.phone.value);
+				formData.append("fullName", this.$refs.fullname.value);
+				if (this.$refs.email.value == "" || this.$refs.phone.value == "" || this.$refs.fullname.value == "") {
+					swal({
+						title: "Required Field",
+						text: "ONe of the required form is empty",
+						icon: "error",
+						button: "Confirm",
+					});
+				} else {
+					this.isSubmitting = true
+					axios.post("/controller/customer/postEdit", formData).then(res => {
+						if (res.status == 201) {
+							swal({
+								title: "Edit Success",
+								text: "Customer information is successfully edited",
+								icon: "success",
+								button: "Confirm",
+							})
+							this.isSubmitting = false;
+							window.location.reload();
+
+						}
+					}).catch();
+				}
+			}
+		},
+	});
+</script>

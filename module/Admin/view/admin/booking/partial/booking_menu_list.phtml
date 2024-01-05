@@ -1,0 +1,50 @@
+<?php
+?>
+
+<div class="col-xl-3">
+	<div class="panel">
+		<div class="panel-heading">
+			<h3 class="panel-title">MENU</h3>
+
+		</div>
+
+		<div class="todo--panel">
+			<form action="#">
+				<ul class="list-group" data-trigger="scrollbar">
+
+					<li class="list-group-item"><a
+						href="<?php  echo $this->url("admin/default", ["controller"=>"booking", "action"=>"board"])?>"><label
+							class="todo--label"> <span>All Booking</span>
+						</label> </a></li>
+						
+						<li class="list-group-item"><a
+						href="<?php  echo $this->url("admin/default", ["controller"=>"booking", "action"=>"upcoming"])?>"><label
+							class="todo--label"> <span>Upcoming Booking</span>
+						</label> </a></li>
+
+					<li class="list-group-item"><a
+						href="<?php  echo $this->url("admin/default", ["controller"=>"booking", "action"=>"initiated"])?>"><label
+							class="todo--label"> <span>Initiated Booking</span>
+						</label> </a></li>
+					<li class="list-group-item"><a
+						href="<?php echo $this->url("admin/default", ["controller"=>"booking",  "action"=>"active"])?>"><label
+							class="todo--label"> <span>In-Transit Trip</span>
+						</label> </a></li>
+						
+						<li class="list-group-item"><a
+						href="<?php echo $this->url("admin/default", ["controller"=>"booking",  "action"=>"completed"])?>"><label
+							class="todo--label"> <span>Completed Trip</span>
+						</label> </a></li>
+					<li class="list-group-item"><a
+						href="<?php  echo $this->url("admin/default", ["controller"=>"booking", "action"=>"cancel"])?>">
+							<label class="todo--label"> <span>Canceled Booking </span>
+						</label>
+					</a></li>
+
+				</ul>
+
+
+			</form>
+		</div>
+	</div>
+</div>

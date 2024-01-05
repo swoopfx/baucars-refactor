@@ -1,0 +1,135 @@
+<?php echo $this->doctype(); ?>
+
+<html lang="en">
+<head>
+<meta charset="utf-8">
+        <?php echo $this->headTitle('BAU CARS '. $this->translate('Welcome Aboard'))->setSeparator(' - ')->setAutoEscape(false) ?>
+
+        <?php
+        
+        echo $this->headMeta()
+            ->appendName('viewport', 'width=device-width, initial-scale=1.0')
+            ->appendHttpEquiv('X-UA-Compatible', 'IE=edge')?>
+
+        <!-- Le styles -->
+<script
+	src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"></script>
+<script>
+          WebFont.load({
+            google: {"families":["Montserrat:400,500,600,700","Noto+Sans:400,700"]},
+            active: function() {
+                sessionStorage.fonts = true;
+            }
+          });
+        </script>
+<!-- Favicon -->
+<link rel="apple-touch-icon" sizes="180x180"
+	href="assets/img/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32"
+	href="assets/img/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16"
+	href="assets/img/favicon-16x16.png">
+        <?php
+        
+        echo $this->headLink(array(
+            'rel' => 'shortcut icon',
+            'type' => 'image/vnd.microsoft.icon',
+            'href' => $this->basePath() . '/img/favicon.ico'
+        ))
+            ->
+        prependStylesheet("https://cdn.jsdelivr.net/npm/vue-toast-notification/dist/theme-default.css")
+            ->prependStylesheet($this->basePath('assets/css/animate/animate.min.css'))
+            ->prependStylesheet($this->basePath('admin/assets/vendors/css/base/elisyam-1.5.min.css'))
+            ->prependStylesheet($this->basePath('admin/assets/vendors/css/base/bootstrap.min.css'))?>
+                      
+
+        <!-- Scripts -->
+        <?php
+        
+        echo $this->headScript()
+            ->prependFile("https://unpkg.com/sweetalert/dist/sweetalert.min.js")
+            ->prependFile("https://cdn.jsdelivr.net/npm/vue-toast-notification@0.6.2/dist/index.min.js")
+            ->prependFile($this->basePath('js/axios.min.js'))
+            ->prependFile($this->basePath('js/vue.js'))
+            ->prependFile($this->basePath('js/bootstrap.min.js'))
+            ->prependFile($this->basePath('js/jquery.min.js'))
+            ->prependFile($this->basePath('js/respond.min.js'), 'text/javascript', array(
+            'conditional' => 'lt IE 9'
+        ))
+            ->prependFile($this->basePath('js/html5shiv.js'), 'text/javascript', array(
+            'conditional' => 'lt IE 9'
+        ));
+        ?>
+
+    </head>
+<body class="bg-white">
+	<!-- Begin Preloader -->
+	<div id="preloader">
+		<div class="canvas">
+			<img src="assets/img/logo.png" alt="logo" class="loader-logo">
+			<div class="spinner"></div>
+		</div>
+	</div>
+	<!-- End Preloader -->
+	<!-- Begin Container -->
+	<div class="container-fluid no-padding h-100">
+		<div class="row flex-row h-100 bg-white">
+			<!-- Begin Left Content -->
+			<div class="col-xl-3 col-lg-5 col-md-5 col-sm-12 col-12 no-padding">
+				<div class="elisyam-bg background-03">
+					<div class="elisyam-overlay overlay-08"></div>
+					<div class="authentication-col-content-2 mx-auto text-center">
+						<div class="logo-centered">
+							<a href="<?php echo $this->url("application")?>"> <img src="assets/img/logo.png"
+								alt="logo">
+							</a>
+						</div>
+						<h1>Come Aboard</h1>
+						<span class="description"> Take the advantage of our unique
+							service </span>
+						<ul class="login-nav nav nav-tabs mt-5 justify-content-center"
+							role="tablist" id="animate-tab">
+							<li><a class="active" data-toggle="tab" href="#singin" role="tab"
+								id="singin-tab" data-easein="zoomInUp">Sign In</a></li>
+							<li><a data-toggle="tab" href="#signup" role="tab"
+								id="signup-tab" data-easein="zoomInRight">Sign Up</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			<!-- End Left Content -->
+			<!-- Begin Right Content -->
+			<div
+				class="col-xl-9 col-lg-7 col-md-7 col-sm-12 col-12 my-auto no-padding">
+				<!-- Begin Form -->
+				<div class="authentication-form-2 mx-auto">
+					<div class="tab-content" id="animate-tab-content">
+						
+						<?php  echo $this->partial("csnuser-login-snippet")?>
+						<?php  echo $this->partial("csnuser-register-snippet")?>
+						<?php  //echo $this->content ?>
+						
+					</div>
+				</div>
+				<!-- End Form -->
+			</div>
+			<!-- End Right Content -->
+		</div>
+		<!-- End Row -->
+	</div>
+	<!--=======================Javascript============================-->
+	<!--=== Jquery Min Js ===-->
+	<script src="/admin/assets/vendors/js/base/jquery.min.js"></script>
+	<script src="/admin/assets/vendors/js/base/core.min.js"></script>
+	<!-- End Vendor Js -->
+	<!-- Begin Page Vendor Js -->
+	<script src="/admin/assets/vendors/js/app/app.min.js"></script>
+	<!-- End Page Vendor Js -->
+	<!-- Begin Page Snippets -->
+	<script src="/admin/assets/js/components/tabs/animated-tabs.min.js"></script>
+
+	<!--=== Mian Js ===-->
+	<script src="assets/js/main.js"></script>
+        <?php echo $this->inlineScript() ?>
+    </body>
+</html>

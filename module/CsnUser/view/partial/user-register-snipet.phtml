@@ -1,0 +1,60 @@
+<?php
+$form = $this->form;
+
+?>
+
+
+<div class="row row-xs mg-b-10">
+          <div class="col-sm"><?php
+            $element = $form->get('username');
+            // echo $this->formlabel($element);
+            echo $this->formElement($element);
+            ?>
+              <div style="font-size: 9px; color: red;">
+              <?php
+            echo $this->formElementErrors($element);
+            ?>
+              </div></div>
+          <div class="col-sm mg-t-10 mg-sm-t-0"> <?php
+            $element = $form->get('email')->setLabel('Email');
+            // echo $this->formlabel($element);
+            echo $this->formElement($element);
+            ?>
+              <div style="font-size: 9px; color: red;">
+              <?php
+            echo $this->formElementErrors($element);
+            ?>
+              </div></div>
+        </div><!-- row -->
+
+         
+            
+
+
+
+
+<div class="row row-xs mg-b-10">
+          <div class="col-sm"><?php
+                $element = $form->get('password')->setLabel('Password');
+                // echo $this->formlabel($element);
+                echo $this->formPassword($element);
+                ?>
+              <div style="font-size: 9px; color: red;">
+              <?php
+            echo $this->formElementErrors($element);
+            ?>
+              </div></div>
+          <div class="col-sm mg-t-10 mg-sm-t-0"><?php
+                $element = $form->get('passwordVerify')->setLabel('Verify Password');
+                // echo $this->formlabel($element);
+                echo $this->formPassword($element);
+                ?>
+              <div style="font-size: 9px; color: red;">
+              <?php
+            echo $this->formElementErrors($element);
+            ?>
+              </div></div>
+        </div><!-- row -->
+
+
+               

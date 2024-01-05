@@ -19,17 +19,20 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
 use ZfcRbac\Identity\IdentityInterface;
 use ZfcRbac\Identity\IdentityProviderInterface;
 use Laminas\Authentication\AuthenticationServiceInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface as FactoryFactoryInterface;
+use Psr\Container\ContainerInterface;
 
-class AuthenticationFactory implements   FactoryInterface
+class AuthenticationFactory implements FactoryFactoryInterface
 {
     protected $authenticationService;
     
    
-
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null)
     {
-        return $serviceLocator->get('doctrine.authenticationservice.orm_default');
+        return $container->get("doctrine.authenticationservice.orm_default");
     }
+
+   
    
 
 

@@ -20,8 +20,11 @@ use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 use DoctrineModule\Validator\NoObjectExists as NoObjectExistsValidator;
 use CsnUser\Entity\User;
 use CsnUser\Service\UserService;
+use Laminas\Form\View\Helper\Captcha\Figlet;
+use Laminas\ServiceManager\Factory\FactoryInterface as FactoryFactoryInterface;
+use Psr\Container\ContainerInterface;
 
-class UserFormFactory implements FactoryInterface
+class UserFormFactory implements FactoryFactoryInterface
 {
 
     /**
@@ -59,6 +62,12 @@ class UserFormFactory implements FactoryInterface
      * @var Laminas\Mvc\I18n\Translator
      */
     protected $url;
+
+    public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null)
+    {
+        $this->serviceLocator = $container;
+        return $this;
+    }
 
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
@@ -208,7 +217,7 @@ class UserFormFactory implements FactoryInterface
             'name' => 'captcha',
             'type' => 'Laminas\Form\Element\Captcha',
             'options' => array(
-                'captcha' => new \Laminas\Captcha\Figlet(array(
+                'captcha' => new Figlet(array(
                     'wordLen' => $this->getOptions()
                         ->getCaptchaCharNum()
                 ))

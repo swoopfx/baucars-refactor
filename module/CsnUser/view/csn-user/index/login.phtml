@@ -1,0 +1,140 @@
+<?php
+
+// $this->headtitle("Login");
+// $form = $this->forme;
+// // var_dump($form);
+// $form->prepare();
+// $form->setAttribute('action', '' /*$this->url('login') */);
+// $form->setAttribute('class', 'form-signin');
+
+
+// $form->get('usernameOrEmail')->setAttributes(array(
+//     'class' => 'form-control',
+//     'placeholder' => $this->translate('Phone Number or Email'),
+//     'aria-describedby' => 'basic-addon1'
+// ));
+
+// $form->get('password')->setAttributes(array(
+//     'class' => 'form-control',
+//     'placeholder' => $this->translate('Password'),
+//     'aria-describedby' => 'basic-addon1'
+// ));
+
+// $form->get('rememberme')->setAttributes(array(
+//     'class' => 'remember'
+// ));
+// $form->get('submit')->setAttributes(array(
+//     'class' => 'btn btn-lg btn-gradient-01',
+// //     "style"=>"width: 80%",
+//     'value' => $this->translate('Log In')
+// ));
+
+?><!-- Begin Sign In -->
+<div role="tabpanel" class="tab-pane show active" id="singin" aria-labelledby="singin-tab">
+	<h3>Sign In</h3>
+	<?php
+
+//echo $this->form()->openTag($form);
+?>
+		<div class="group material-input">
+		<?php  //echo $this->forminput($form->get('usernameOrEmail'))?>
+			<input type="text" v-model="phoneOrEmail" ref="phoneOrEmail" required> <span class="highlight"></span> <span class="bar"></span> <label>Email</label>
+		</div>
+		<div class="group material-input">
+		<?php  //echo $this->forminput($form->get('password'))?>
+			<input @keyup.enter="login()" type="password" v-model="password" ref="password" required> <span class="highlight"></span> <span class="bar"></span> <label>Password</label>
+		</div>
+
+	<div class="row">
+		<div class="col text-left">
+			<div class="styled-checkbox">
+				<input type="checkbox" ref="remember" name="checkbox" id="remeber"> <label for="remeber">Remember me</label>
+			</div>
+		</div>
+		<div class="col text-right">
+			<a href=" ">Forgot Password ?</a>
+		</div>
+	</div>
+	<div class="sign-btn text-center">
+	<?php //echo  $this->formSubmit($form->get('submit'))?>
+		<button @click="login()" :disabled="submitStatus" class="btn btn-lg btn-gradient-01"> Sign In
+		</button>
+	</div>
+	<?php
+// echo $this->formRow($form->get('csrf'));
+// echo $this->form()->closeTag();
+?> 
+</div>
+<!-- End Sign In -->
+
+<script>
+	Vue.use(VueToast, {
+		// One of options
+		position: 'top'
+	});
+
+	let login = new Vue({
+		el: "#singin",
+		data() {
+			return {
+				hey: "JJJJ",
+				phoneOrEmail:"",
+				password:"",
+				isSubmitting : false
+			}
+		},
+		computed: {
+			submitStatus (){
+				if(this.phoneOrEmail == "" || this.password == "" || this.isSubmitting){
+					return true;
+				}else{
+					return false;
+				}
+
+				
+			}
+		},
+		methods: {
+			login() {
+				
+				if (this.$refs.password.value == "" || this.$refs.password.value == "") {
+					this.$toast.open({
+								message: "Either field cannot be empty",
+								type: "error",
+								duration: 5000,
+								dismissible: true
+							})
+				} else {
+					this.isSubmitting = true;
+					let formData = new FormData();
+					formData.append("password", this.$refs.password.value);
+					formData.append("phoneOrEmail", this.$refs.phoneOrEmail.value);
+					axios.post("/login/loginjson", formData).then(res => {
+						if (res.status == 201) {
+							//process redirection 
+							// make a toast notification 
+							this.$toast.open({
+								message: "Successfully logged in",
+								type: "success",
+								duration: 20000,
+								dismissible: true
+							});
+							// console.log(res.data.redirect);
+							window.location = res.data.redirect;
+						}
+						
+					}).catch(err => {
+						this.$toast.open({
+								message: err.response.data.messages,
+								type: "error",
+								duration: 20000,
+								dismissible: true
+							})
+						
+						this.isSubmitting = false;
+					});
+				}
+			}
+		},
+	});
+</script>

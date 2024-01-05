@@ -16,13 +16,18 @@ namespace CsnUser\Service\Factory;
 use Laminas\ServiceManager\FactoryInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use CsnUser\Options\ModuleOptions;
+use Laminas\ServiceManager\Factory\FactoryInterface as FactoryFactoryInterface;
+use Psr\Container\ContainerInterface;
 
-class ModuleOptionsFactory implements FactoryInterface
+class ModuleOptionsFactory implements FactoryFactoryInterface
 {
 
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null)
     {
-        $config = $serviceLocator->get('Config');
+        $config = $container->get('Config');
         return new ModuleOptions(isset($config['csnuser']) ? $config['csnuser'] : array());
+  
     }
+
+   
 }

@@ -1,0 +1,683 @@
+<?php
+echo $this->headtitle("Driver Controller");
+
+?>
+
+
+
+<div id="driverId">
+	<div id="onStartTrip" class="modal fade">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content room-details">
+				<div class="modal-header border-0">
+					<h3 class="modal-title">
+						<i class="la la-glass la-2x align-middle pr-2"></i>Start Trip
+					</h3>
+					<button type="button" class="close" data-dismiss="modal">
+						<span aria-hidden="true">×</span> <span class="sr-only">close</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<div>
+						<div class="form-group row d-flex align-items-center mb-5">
+							<label class="col-lg-4 form-control-label d-flex justify-content-lg-end">Trip
+								Code</label>
+							<div class="col-lg-8">
+								<input type="text" v-model="tripCode" ref="tripCode" class="form-control" placeholder="">
+							</div>
+						</div>
+						<div v-if="byPassCode != ''">
+							<div class="text">
+								<div class="number">{{byPassCode}}</div>
+							</div>
+							<p>ENTER THIS BYPASS CODE</p>
+						</div>
+					</div>
+
+
+				</div>
+				<div v-if="hasInitiatedStartTrip">
+					<button type="button" @click="startTrip()" :disabled="hasStartedTrip" class="btn btn-success btn-block">
+						<div v-if="isByPassTrip">Processing...</div>
+						<div v-else>Start Trip</div>
+					</button>
+					<button type="button" @click="cancelByPass()" :disabled="hasStartedTrip" class="btn btn-danger btn-block">
+						<div v-if="isByPassTrip">Processing...</div>
+						<div v-else>Cancel Trip</div>
+					</button>
+				</div>
+
+				<div class="modal-footer border-0" v-else-if="byPassCode != '' ">
+
+					<button type="button" @click="byPassAction()" :disabled="isByPassTrip" class="btn btn-success btn-block">
+						<div v-if="isByPassTrip">Processing...</div>
+						<div v-else>Confirm ByPass</div>
+					</button>
+					<button type="button" @click="cancelByPass()" :disabled="isByPassTrip" class="btn btn-danger btn-block">
+						<div v-if="isByPassTrip">Processing...</div>
+						<div v-else>Cancel ByPass</div>
+					</button>
+				</div>
+				<div v-else class="modal-footer border-0">
+					<button type="button" class="btn btn-shadow" data-dismiss="modal">Cancel</button>
+					<button type="button" @click="initiateStartTrip()" :disabled="isStartingTrip" class="btn btn-success">
+						<div v-if="isStartingTrip">Processing...</div>
+						<div v-else>Initiate Trip</div>
+					</button>
+					<button type="button" @click="getByPassCode()" :disabled="isByPassCode" class="btn btn-danger">
+						<div v-if="isByPassCode">Processing...</div>
+						<div v-else>Get ByPass Code</div>
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+
+	<div id="onEndTrip" class="modal fade">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content room-details">
+				<div class="modal-header border-0">
+					<h3 class="modal-title">
+						<i class="la la-glass la-2x align-middle pr-2"></i>End Trip
+					</h3>
+					<button type="button" class="close" data-dismiss="modal">
+						<span aria-hidden="true">×</span> <span class="sr-only">close</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<h3>Make sure you have reached the destination defined</h3>
+
+
+				</div>
+
+				<div v-if="ridersPayment != 0">
+					<div class="text">
+						<div class="number">&#8358;{{ridersPayment}}</div>
+					</div>
+					<button type="button" class="btn btn-shadow" data-dismiss="modal">Raise Concern</button>
+					<button type="button" @click="driverCollectedPayment()" :disabled="isRiderPaid" class="btn btn-success">
+						<div v-if="isRiderPaid">Processing...</div>
+						<div v-else>Payment Collected</div>
+					</button>
+				</div>
+				<div class="modal-footer border-0" v-else>
+					<button type="button" class="btn btn-shadow" data-dismiss="modal">Cancel</button>
+					<button type="button" @click="endTrip()" :disabled="isEndTrip" class="btn btn-success">
+						<div v-if="isEndTrip">Processing...</div>
+						<div v-else>End Trip</div>
+					</button>
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="content-inner boxed mt-4 w-100">
+		<div class="container">
+			<!-- Begin Page Header-->
+			<div class="row">
+				<div class="page-header">
+					<div class="d-flex align-items-center">
+						<h2 class="page-header-title">Driver : <?php echo $user->getFullName() ?> </h2>
+						<div>
+							<!-- 	                                <div class="page-header-tools"> -->
+							<!-- 	                                    <a class="btn btn-gradient-01" href="#">Add Widget</a> -->
+							<!-- 	                                </div> -->
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- End Page Header -->
+			<!-- Begin Row -->
+
+			<!-- End Row -->
+			<div class="row flex-row">
+
+				<div v-if="activetrip.length" class="col-xl-6 col-md-6 col-sm-12">
+					<!-- Begin Widget 01 -->
+					<div class="widget widget-01 has-shadow">
+						<div class="widget-body no-padding">
+							<h3>Active Trip</h3>
+							<br>
+							<div class="row no-margin justify-content-center">
+								<div class="col-12 col-xl-12 col-md-12 col-sm-10">
+									<div class="today-sales">
+										<div class="text">
+											<br>
+											<div class="heading">{{activetrip[0].user.phoneNumber}}</div>
+											<div class="number">{{activetrip[0].user.fullName}}</div>
+											<div class="value text-blue">{{activetrip[0].user.email}}</div>
+											<hr>
+											<div class="heading">
+												State : <span>Active Trip</span>
+											</div>
+										</div>
+										<div class="col-12 widget widget-18">
+											<div class="new-message">
+												<div class="media">
+
+													<div class="media-body align-self-center">
+														<div class="new-message-sender">Pick Up Address</div>
+														<div class="new-message-time">{{activetrip[0].pickUpAddress}}</div>
+													</div>
+
+												</div>
+											</div>
+										</div>
+
+										<div class="col-12 widget widget-18">
+											<div class="new-message">
+												<div class="media">
+
+													<div class="media-body align-self-center">
+														<div class="new-message-sender">Destination Address</div>
+														<div class="new-message-time">{{activetrip[0].destination}}</div>
+													</div>
+
+												</div>
+											</div>
+										</div>
+
+									</div>
+								</div>
+								<!-- End Today Sales -->
+							</div>
+
+
+							<div class="circle">
+
+								<button @click="reachedDestination()" :disabled="isReachedDestination" v-if="activetrip[0].isReturnTrip && activetrip[0].firstLeg == null" class="btn btn-primary btn-lg btn-block">
+									<div v-if="isReachedDestination">...Processing</div>
+									<div v-else>Reached
+										Destination</div>
+								</button>
+								<button v-else type="button" data-toggle="modal" data-target="#onEndTrip" class="btn btn-danger btn-lg btn-block">End Trip</button>
+							</div>
+							<!-- Begin Other Stats -->
+							<div class="other-stats">
+								<!-- Begin Row -->
+
+								<!-- End Row -->
+							</div>
+							<!-- End Other Stats -->
+						</div>
+					</div>
+					<!-- End Widget 01 -->
+				</div>
+
+				<div v-else-if="assignedBooking.length" class="col-xl-6 col-md-6 col-sm-12">
+					<!-- Begin Widget 01 -->
+					<div class="widget widget-01 has-shadow">
+						<div class="widget-body no-padding">
+							<h3>Assigned Booking</h3>
+							<br>
+							<div class="row no-margin justify-content-center">
+								<div class="col-12 col-xl-12 col-md-12 col-sm-10">
+									<div class="today-sales">
+										<div class="text">
+											<br>
+											<div class="heading">{{assignedBooking[0].user.phoneNumber}}</div>
+											<div class="number">{{assignedBooking[0].user.fullName}}</div>
+											<div class="value text-blue">{{assignedBooking[0].user.email}}</div>
+											<hr>
+											<div class="heading">
+												State : <span>Assigned</span>
+											</div>
+										</div>
+										<div class="col-12 widget widget-18">
+											<div class="new-message">
+												<div class="media">
+
+													<div class="media-body align-self-center">
+														<div class="new-message-sender">Pick Up Address</div>
+														<div class="new-message-time">{{assignedBooking[0].pickUpAddress}}</div>
+													</div>
+
+												</div>
+											</div>
+										</div>
+
+										<div class="col-12 widget widget-18">
+											<div class="new-message">
+												<div class="media">
+
+													<div class="media-body align-self-center">
+														<div class="new-message-sender">Destination Address</div>
+														<div class="new-message-time">{{assignedBooking[0].destination}}</div>
+													</div>
+
+												</div>
+											</div>
+										</div>
+
+									</div>
+								</div>
+								<!-- End Today Sales -->
+							</div>
+
+
+							<div class="circle">
+
+								<button v-if="assignedBooking[0].driverArrived != null" type="button" data-toggle="modal" data-target="#onStartTrip" class="btn btn-primary btn-lg btn-block">Start Trip</button>
+								<button v-else type="button" @click="driverHasArrived()" :disabled="isDriverArrived" class="btn btn-primary btn-lg btn-block">
+									<div v-if="isDriverArrived">Processing ...</div>
+									<div v-else>Arrived</div>
+								</button>
+							</div>
+							<!-- Begin Other Stats -->
+							<div class="other-stats">
+								<!-- Begin Row -->
+
+								<!-- End Row -->
+							</div>
+							<!-- End Other Stats -->
+						</div>
+					</div>
+					<!-- End Widget 01 -->
+				</div>
+
+
+				<div class="col-xl-6 col-md-6 os-animation" data-os-animation="fadeInUp">
+					<!-- Begin Widget 05 -->
+					<div class="widget widget-05 has-shadow">
+						<!-- Begin Widget Header -->
+						<div class="widget-header bordered d-flex align-items-center">
+							<!-- <h2>Top Author</h2> -->
+
+						</div>
+						<!-- End Widget Header -->
+						<!-- Begin Widget Body -->
+						<div class="widget-body no-padding hidden">
+							<div class="author-avatar">
+								<span class="badge-pulse-green"></span>
+
+
+							</div>
+							<!-- <div class="author-name">
+                                Louis Henry
+                                <span>Designer</span>
+                            </div> -->
+							<!-- 							<div class="chart"> -->
+							<!-- 								<div class="row no-margin justify-content-center"> -->
+							<!-- 									<div class="col-12 col-xl-8 col-md-8 col-sm-8"> -->
+							<!-- 										<div class="row no-margin align-items-center"> -->
+							<!-- Begin Chart -->
+							<!-- 											<div class="col-9 no-padding"> -->
+							<!-- 												<div class="chart-graph"> -->
+							<!-- 													<div class="chart"> -->
+							<!-- 														<canvas id="sales-stats"></canvas> -->
+							<!-- 													</div> -->
+							<!-- 												</div> -->
+							<!-- 											</div> -->
+							<!-- 											<div class="col-3 no-padding text-center"> -->
+							<!-- 												<div class="chart-text"> -->
+							<!-- 													<span class="heading">Sales</span> <span class="number">364</span> -->
+							<!-- 													<span class="cxg text-green">+35%</span> -->
+							<!-- 												</div> -->
+							<!-- 											</div> -->
+							<!-- End Chart -->
+							<!-- 										</div> -->
+							<!-- 									</div> -->
+							<!-- 								</div> -->
+							<!-- 							</div> -->
+							<!-- 							<div class="social-stats"> -->
+							<!-- 								<div class="row d-flex justify-content-between"> -->
+							<!-- 									<div class="col-4 text-center"> -->
+							<!-- 										<i class="la la-users followers"></i> -->
+							<!-- 										<div class="counter">+124</div> -->
+							<!-- 										<div class="heading">Followers</div> -->
+							<!-- 									</div> -->
+							<!-- 									<div class="col-4 text-center"> -->
+							<!-- 										<i class="la la-dribbble dribbble"></i> -->
+							<!-- 										<div class="counter">+357</div> -->
+							<!-- 										<div class="heading">Likes</div> -->
+							<!-- 									</div> -->
+							<!-- 									<div class="col-4 text-center"> -->
+							<!-- 										<i class="la la-behance behance"></i> -->
+							<!-- 										<div class="counter">+98</div> -->
+							<!-- 										<div class="heading">Followers</div> -->
+							<!-- 									</div> -->
+							<!-- 								</div> -->
+							<!-- 							</div> -->
+							<!-- 							<div class="actions text-center"> -->
+							<!-- 								<a href="pages-profile.html" class="btn btn-gradient-01">View -->
+							<!-- 									Profile</a> -->
+							<!-- 							</div> -->
+						</div>
+						<!-- End Widget Body -->
+					</div>
+					<!-- End Widget 05 -->
+				</div>
+			</div>
+			<!-- End Row -->
+			<div class="row flex-row">
+				<div class="col-xl-12 os-animation" data-os-animation="fadeInUp">
+					<!-- Begin Widget 07 -->
+					<div class="widget widget-07 has-shadow">
+						<!-- Begin Widget Header -->
+						<div class="widget-header bordered d-flex align-items-center">
+							<h2>Previous Completed Trips</h2>
+							<!--                                         <div class="widget-options"> -->
+							<!--                                             <div class="btn-group" role="group"> -->
+							<!--                                                 <button type="button" class="btn btn-primary ripple">Week</button> -->
+							<!--                                                 <button type="button" class="btn btn-primary ripple">Month</button> -->
+							<!--                                             </div> -->
+							<!--                                         </div> -->
+						</div>
+						<!-- End Widget Header -->
+						<!-- Begin Widget Body -->
+						<div class="widget-body">
+							<div class="table-responsive table-scroll padding-right-10" style="max-height: 520px;">
+								<table class="table table-hover mb-0">
+									<thead>
+										<tr>
+											<th>
+												<div class="styled-checkbox mt-2">
+													<input type="checkbox" name="check-all" id="check-all"> <label for="check-all"></label>
+												</div>
+											</th>
+											<th>Order ID</th>
+											<th>Customer Name</th>
+											<th>Country</th>
+											<th>Ship Date</th>
+											<th><span style="width: 100px;">Status</span></th>
+											<th>Order Total</th>
+											<th>Actions</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr v-if="completedTrips.length" v-for="trip in completedTrips">
+											<td style="width: 5%;">
+												<div class="styled-checkbox mt-2">
+													<input type="checkbox" name="cb1" id="cb1"> <label for="cb1"></label>
+												</div>
+											</td>
+											<td><span class="text-primary">054-01-FR</span></td>
+											<td>Lori Baker</td>
+											<td>US</td>
+											<td>10/21/2017</td>
+											<td><span style="width: 100px;"><span class="badge-text badge-text-small info">Paid</span></span></td>
+											<td>$139.45</td>
+											<td class="td-actions"><a href="#"><i class="la la-edit edit"></i></a>
+												<a href="#"><i class="la la-close delete"></i></a>
+											</td>
+										</tr>
+
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<!-- End Widget Body -->
+						<!-- Begin Widget Footer -->
+						<div class="widget-footer d-flex align-items-center">
+							<div class="mr-auto p-2">
+								<span class="display-items">Showing 1-30 / 150 Results</span>
+							</div>
+							<div class="p-2">
+								<nav aria-label="...">
+									<ul class="pagination justify-content-end">
+										<li class="page-item disabled"><span class="page-link"><i class="ion-chevron-left"></i></span></li>
+										<li class="page-item"><a class="page-link" href="#">1</a></li>
+										<li class="page-item active"><span class="page-link">2<span class="sr-only">(current)</span></span></li>
+										<li class="page-item"><a class="page-link" href="#">3</a></li>
+										<li class="page-item"><a class="page-link" href="#"><i class="ion-chevron-right"></i></a></li>
+									</ul>
+								</nav>
+							</div>
+						</div>
+						<!-- End Widget Footer -->
+					</div>
+					<!-- End Widget 07 -->
+				</div>
+			</div>
+
+			<!-- End Row -->
+		</div>
+		<!-- End Container -->
+		<!-- Begin Page Footer-->
+		<footer class="main-footer">
+			<div class="container">
+				<div class="row">
+					<div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 d-flex align-items-center justify-content-xl-start justify-content-lg-start justify-content-md-start justify-content-center">
+						<p class="text-gradient-02">Design By I-Manager Solutions</p>
+					</div>
+					<div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 d-flex align-items-center justify-content-xl-end justify-content-lg-end justify-content-md-end justify-content-center">
+
+					</div>
+				</div>
+			</div>
+		</footer>
+		<!-- End Page Footer -->
+		<a href="#" class="go-top"><i class="la la-arrow-up"></i></a>
+		<!-- Offcanvas Sidebar -->
+		<div class="off-sidebar from-right">
+			<div class="off-sidebar-container">
+				<header class="off-sidebar-header"> </header>
+
+				<!-- End Offcanvas Container -->
+			</div>
+			<!-- End Offsidebar Container -->
+		</div>
+		<!-- End Offcanvas Sidebar -->
+	</div>
+</div>
+
+<script>
+	let driver = new Vue({
+		el: "#driverId",
+		data() {
+			return {
+				hey: "NONONON",
+				isEndTrip: false,
+				isByPassTrip: false,
+				hasInitiatedStartTrip: false,
+				hasStartedTrip: false,
+				isInitiateStartStrip: false,
+				isStartingTrip: false,
+				isByPassCode: false,
+				isByPass: false,
+				tripCode: '',
+				byPassCode: "",
+				activetrip: [],
+				assignedBooking: [],
+				completedTrips: [],
+
+				ridersPayment: 0,
+				isRiderPaid: false,
+				isDriverCollectPayment: false,
+				isDriverArrived: false,
+				isReachedDestination: false,
+			}
+		},
+
+		mounted() {
+			this.getActiveTrip();
+			this.getAssignedBooking();
+		},
+
+		methods: {
+			getCompletedTrips() {
+				axios.get("/driver/board/active-trip").then(res => {
+					if (res.status == 200) {
+						this.completedTrips = res.data.data;
+					}
+				}).catch(err => {
+
+				});
+			},
+
+			getActiveTrip() {
+				axios.get("/driver/board/active-trip").then(res => {
+					if (res.status == 200) {
+						this.activetrip = res.data.data;
+						// console.log(this.activetrip);
+					}
+				}).catch();
+			},
+
+			getAssignedBooking() {
+				axios.get("/driver/board/assigned-booking").then(res => {
+					if (res.status == 200) {
+						this.assignedBooking = res.data.data;
+					}
+				}).catch();
+			},
+
+
+
+			confirmCode() {
+
+			},
+
+			getByPassCode() {
+				this.isByPassCode = true;
+				this.isStartingTrip = true;
+				let formData = new FormData();
+				formData.append("id", this.assignedBooking[0].id);
+				axios.post("/driver/board/getByPassCode", formData).then(res => {
+					if (res.status == 200) {
+						this.byPassCode = res.data.data;
+					}
+				}).catch(err => {
+					swal({
+						title: "Empty Bypass Code",
+						text: "PLease fill a pickup address",
+						icon: "error",
+						button: "Continue!",
+					});
+				});
+			},
+
+			cancelByPass() {
+				window.location.reload();
+			},
+
+			byPassAction() {
+				// this.byPassTrip = true;
+				this.isByPassTrip = true;
+				if (this.tripCode == '') {
+					swal({
+						title: "Empty Bypass Code",
+						text: "Enter ByPass Code",
+						icon: "error",
+						button: "Continue!",
+					});
+				} else {
+					let formData = new FormData();
+					formData.append("code", this.tripCode);
+					formData.append("id", this.assignedBooking[0].id); // this is the booking ID
+					axios.post("/driver/board/bypass", formData).then(res => {
+						if (res.status == 201) {
+							window.location.reload();
+						}
+					}).catch(err => {
+						swal({
+							title: "Error",
+							text: err.response.data.messages,
+							icon: "error",
+							button: "Continue!",
+						});
+					});
+				}
+			},
+
+
+			initiateStartTrip() {
+				this.isInitiateStartStrip = true;
+				this.isByPassCode = true;
+				this.isStartingTrip = true;
+				axios.get("/driver/board/initiatestarttrip", {
+					params: {
+						id: this.assignedBooking[0].id
+					}
+				}).then(res => {
+					if (res.status == 200) {
+						this.hasInitiatedStartTrip = true;
+					}
+				}).catch()
+			},
+
+			startTrip() {
+				this.hasStartedTrip = true;
+				let formData = new FormData();
+				console.log(this.assignedBooking[0].id);
+				if (this.tripCode == '') {
+					swal({
+						title: "Empty pickup address",
+						text: "PLease fill a pickup address",
+						icon: "error",
+						button: "Continue!",
+					});
+
+				} else {
+					formData.append("code", this.tripCode);
+					formData.append("bookingId", this.assignedBooking[0].id);
+					axios.post("/driver/board/starttrip", formData).then(res => {
+						if (res.status == 201) {
+							window.location.reload();
+						}
+					}).catch(err => {
+
+					});
+				}
+
+			},
+
+			driverHasArrived() {
+				this.isDriverArrived = true;
+				let formData = new FormData();
+				formData.append("id", this.assignedBooking[0].id);
+				axios.post("/driver/board/drivararrived", formData).then(res => {
+					if (res.status == 204) {
+						window.location.reload();
+					}
+				});
+			},
+
+			reachedDestination() {
+				this.isReachedDestination = true;
+				let formData = new FormData();
+				formData.append("bookingid", this.activetrip[0].id);
+				axios.post("/driver/board/first-leg", formData).then(res => {
+					if (res.status == 201) {
+						window.location.reload();
+					}
+				}).catch();
+			},
+
+			endTrip() {
+				this.isEndTrip = true;
+				let formData = new FormData();
+				console.log(this.activetrip[0].id);
+				formData.append("bookingId", this.activetrip[0].id);
+				axios.post("/driver/board/endtrip", formData).then(res => {
+					if (res.status == 201) {
+						this.ridersPayment = res.data.price;
+					}
+				}).catch(err => {
+
+				});
+			},
+
+			driverCollectedPayment() {
+				this.isRiderPaid = true;
+				let formData = new FormData();
+				formData.append("id", this.activetrip[0].id);
+				formData.append("amount", this.ridersPayment);
+				axios.post("/driver/board/paymentcollected", formData).then(res => {
+					if (res.status == 204) {
+						window.location.reload();
+					}
+				}).catch();
+			},
+
+			raiseclaim() {
+
+			}
+
+		},
+	});
+</script>

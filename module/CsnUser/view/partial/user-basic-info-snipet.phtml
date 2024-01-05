@@ -1,0 +1,72 @@
+<?php
+
+$userForm = $this->userFieldset;
+?>
+
+<div class="form-group">
+         
+            <?php
+            $element = $userForm->get('username');
+             echo $this->formlabel($element);
+             ?>
+                          	<div class="col-md-9 col-sm-9 col-xs-12">
+                          <?php
+            echo $this->formElement($element);
+            ?>
+            </div>
+              <div style="font-size: 9px; color: red;">
+              <?php
+            echo $this->formElementErrors($element);
+            ?>
+              </div>
+</div>
+
+<div class="form-group">
+         
+            <?php
+            $element = $userForm->get('email');
+             echo $this->formlabel($element);
+             ?>
+             	<div class="col-md-9 col-sm-9 col-xs-12">
+             <?php 
+            echo $this->formElement($element);
+            ?>
+            </div>
+              <div style="font-size: 9px; color: red;">
+              <?php
+            echo $this->formElementErrors($element);
+            ?>
+              </div>
+</div>
+<div class="form-group">
+         
+            <?php
+            $element = $userForm->get('password');
+             echo $this->formlabel($element); ?>
+             <div class="col-md-9 col-sm-9 col-xs-12">
+           <?php  echo $this->formElement($element);
+            ?>
+            </div>
+              <div style="font-size: 9px; color: red;">
+              <?php
+            echo $this->formElementErrors($element);
+            ?>
+              </div>
+</div>
+<div class="form-group">
+         
+            <?php
+            $element = $userForm->get('passwordVerify');
+             echo $this->formlabel($element);
+             ?>
+                          	<div class="col-md-9 col-sm-9 col-xs-12">
+                          <?php
+            echo $this->formElement($element);
+            ?>
+            </div>
+              <div style="font-size: 9px; color: red;">
+              <?php
+            echo $this->formElementErrors($element);
+            ?>
+              </div>
+</div>

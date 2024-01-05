@@ -13,12 +13,20 @@
  */
 namespace CsnUser\Service\Factory;
 
+use Laminas\ServiceManager\Factory\FactoryInterface as FactoryFactoryInterface;
 use Laminas\ServiceManager\FactoryInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\View\Model\ViewModel;
+use Psr\Container\ContainerInterface;
 
-class ErrorViewFactory implements FactoryInterface
+class ErrorViewFactory implements FactoryFactoryInterface
 {
+
+    public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null)
+    {
+        $this->serviceLocator  = $container;
+        return $this;
+    }
 
     private $serviceLocator;
 

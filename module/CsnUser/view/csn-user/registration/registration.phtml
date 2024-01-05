@@ -1,0 +1,129 @@
+<!-- Begin Sign Up -->
+<div role="tabpanel" class="tab-pane" id="signup" aria-labelledby="signup-tab">
+	<h3>Create An Account</h3>
+	<form>
+
+		<div class="group material-input">
+			<input type="text" v-model='fullname' ref="fullname" required> <span class="highlight"></span> <span class="bar"></span> <label>Full Name</label>
+		</div>
+
+		<div class="group material-input">
+			<input type="text" v-model="phoneNumber" @input="acceptNumber" ref="phoneNumber" required> <span class="highlight"></span> <span class="bar"></span> <label>Phone Number</label>
+		</div>
+
+		<div class="group material-input">
+			<input type="text" v-model="email" ref="email" required> <span class="highlight"></span> <span class="bar"></span> <label>Email</label>
+		</div>
+
+
+		<div class="group material-input">
+			<input type="password" v-model="password" required> <span class="highlight"></span>
+			<span class="bar"></span> <label>Password</label>
+		</div>
+		<div class="group material-input">
+			<input type="password" v-model="confirm_parrword" ref="confirm_parrword" required> <span class="highlight"></span>
+			<span class="bar"></span> <label>Confirm Password</label>
+		</div>
+	</form>
+	<div class="row">
+		<div class="col text-left">
+			<div class="styled-checkbox">
+				<input type="checkbox" name="checkbox" :checked="isterms" v-model="isterms" id="agree"> <label for="agree">I Accept <a href="#">Terms and Conditions</a></label>
+			</div>
+		</div>
+	</div>
+	<div class="sign-btn text-center">
+		<button type="button" :disabled="submitStatus" @click="register()" class="btn btn-lg btn-gradient-01">
+			Sign Up </button>
+	</div>
+</div>
+<!-- End Sign Up -->
+
+
+<script>
+	Vue.use(VueToast, {
+		// One of options
+		position: 'top'
+	});
+
+
+
+
+	let ser= new Vue({
+		el: "#signup",
+		data() {
+			return {
+				phoneNumber: "",
+				email: "",
+				reg: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,24}))$/,
+				fullname: "",
+				confirm_parrword: "",
+				isterms: false,
+				password: ""
+
+			}
+		},
+
+		computed: {
+			submitStatus() {
+				if (this.phoneNumber == "" || this.email == "" || this.fullname == "" || this.password == '' || this.confirm_parrword == '' || !this.isEmailValid || !this.isterms) {
+					return true;
+				} else {
+					return false;
+				}
+
+
+			},
+
+			isEmailValid() {
+				return this.reg.test(this.email);
+			}
+		},
+		
+
+		methods: {
+			register() {
+				if (this.password !== this.confirm_parrword) {
+					swal({
+						title: "Errr!",
+						text: "Your password dont match",
+						icon: "error",
+						button: "Back",
+					});
+				} else {
+					let formData = new FormData();
+					formData.append("phoneNumber", this.phoneNumber);
+					formData.append("email", this.email);
+					formData.append("fullname", this.fullname);
+					formData.append("password", this.password);
+					formData.append("isterms", this.isterms);
+					axios.post("/register/registerjson", formData).then(res => {
+						if (res.status == 201) {
+							swal({
+								title: "Great job!",
+								text: "Please verify your email, a mail has been sent to you!",
+								icon: "success",
+								button: "Continue!",
+							}).then(res => {
+								location.reload();
+							});
+						}
+					}).catch(err => {
+
+						this.$toast.open({
+							message: err.response.data.messages,
+							type: "error",
+							duration: 5000,
+							dismissible: true
+						})
+					});
+				}
+			},
+
+			acceptNumber() {
+				var x = this.phoneNumber.replace(/\D/g, '').match(/(\d{0,4})(\d{0,3})(\d{0,4})/);
+				this.phoneNumber = !x[2] ? x[1] : '' + x[1] + '-' + x[2] + (x[3] ? '-' + x[3] : '');
+			}
+		},
+	});
+</script>

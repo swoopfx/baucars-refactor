@@ -1,22 +1,28 @@
 <?php
+
 namespace CsnUser\Service\Factory;
 
 use Laminas\ServiceManager\FactoryInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use CsnUser\Service\NewUserService;
+use Laminas\ServiceManager\Factory\FactoryInterface as FactoryFactoryInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  *
  * @author swoopfx
  *        
  */
-class UserFactory implements FactoryInterface
+class UserFactory implements FactoryFactoryInterface
 {
 
-    /**
-     */
-    public function __construct()
-    {}
+    public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null)
+    {
+        $user = new NewUserService();
+        $em = $container->get('doctrine.entitymanager.orm_default');
+        $user->setEntityManager($em);
+        return $user;
+    }
 
     /**
      * (non-PHPdoc)
@@ -26,10 +32,6 @@ class UserFactory implements FactoryInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $user = new NewUserService();
-        $em = $serviceLocator->get('doctrine.entitymanager.orm_default');
-        $user->setEntityManager($em);
-        return $user;
+       
     }
 }
-

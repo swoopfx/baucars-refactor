@@ -1,0 +1,1686 @@
+<?php
+echo $this->headtitle("Customer Board");
+
+?>
+<?php
+$flashMessenger = $this->flashMessenger()
+	->setMessageOpenFormat('<div%s>
+     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
+         &times;
+     </button>
+     <ul><li>')
+	->setMessageSeparatorString('</li><li>')
+	->setMessageCloseString('</li></ul></div>');
+?>
+<?php echo $flashMessenger->render('error',   array('alert', 'alert-dismissable', 'alert-danger')); ?>
+<?php echo $flashMessenger->render('info',    array('alert', 'alert-dismissable', 'alert-info')); ?>
+<?php echo $flashMessenger->render('default', array('alert', 'alert-dismissable', 'alert-warning')); ?>
+<?php echo $flashMessenger->render('success', array('alert', 'alert-dismissable', 'alert-success')); ?>
+<?php $this->headLink()->appendStylesheet($this->basepath("css/jquery.timepicker.min.css")); ?>
+<div class="page-content" id="cutomerPage">
+
+	<div class="content-inner boxed mt-4 w-100">
+		<div class="container">
+
+
+			<div class="row">
+				<div class="page-header mt-3">
+					<div class="row d-flex align-items-center">
+						<div class="col-xl-6 col-lg-6 col-md-6 col-12 d-flex justify-content-xl-end justify-content-lg-end justify-content-md-end justify-content-center">
+							<h2 class="page-header-title" style="margin-right: 0 !important;"> Welcome {{profileName}}</h2>
+						</div>
+
+					</div>
+				</div>
+			</div>
+
+
+			<div class="row flex-row">
+				<div class="col-xl-6  os-animation" data-os-animation="fadeInUp">
+					<!-- Begin Widget 05 -->
+					<div class="widget widget-05 has-shadow">
+						<!-- Begin Widget Header -->
+						<div class="widget-header bordered d-flex align-items-center">
+							<h2>Booking Form</h2>
+							<div class="widget-options">
+								<div class="dropdown">
+									<button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="dropdown-toggle">
+										<i class="la la-ellipsis-h"></i>
+									</button>
+
+								</div>
+							</div>
+						</div>
+						<!-- End Widget Header -->
+						<!-- Begin Widget Body -->
+						<div class="widget-body no-padding hidden">
+
+							<div class="row flex-row">
+								<div class="col-xl-12">
+									<!-- Form -->
+
+									<div class="widget has-shadow">
+
+
+										<div class="widget-body" v-if="isCashPayment">
+											<div class="spinner"></div>
+										</div>
+										<div class="widget-body" v-else>
+
+											<div v-if="isPreBooking">
+
+												<div class="widget-36 widget has-shadow">
+													<!-- Begin Widget Body -->
+													<div class="widget-body">
+														<div class="row">
+															<div class="col-xl-12 text-center mt-3 mb-3">
+																<div class="nb-visitors">
+																	BOOKING PRICE
+																</div>
+																<div class="visitors-nb text-gradient-02">
+																	&#8358; {{formatPrice(bookingPrice)}}
+																</div>
+															</div>
+
+															<div class="col-12 widget widget-18">
+																<div class="new-message">
+																	<div class="media">
+
+																		<div class="media-body align-self-center">
+																			<div class="new-message-sender">Pick Up Address</div>
+																			<div class="new-message-time">{{pickUpAddress}}</div>
+																		</div>
+
+																	</div>
+																</div>
+															</div>
+
+
+															<div class="col-12 widget widget-18">
+																<div class="new-message">
+																	<div class="media">
+
+																		<div class="media-body align-self-center">
+																			<div class="new-message-sender">Destination Address </div>
+																			<div class="new-message-time">{{destinationAddress}}</div>
+																		</div>
+																		<div class="media-right align-self-center">
+
+																		</div>
+																	</div>
+																</div>
+															</div>
+															<div class="nb-visitors">
+																Estimated Time: {{estimatedTime}}
+															</div>
+
+
+														</div>
+													</div>
+													<!-- End Widget Body -->
+												</div>
+
+												<div v-if="initiatedPayment">
+
+													<div class="spinner"></div>
+												</div>
+												<div v-if="!initiatedPayment">
+
+													<div class="text-right">
+
+
+														<button @click="cashPayment()" class="btn btn-default" type="button"><i class="ion ion-social-usd"></i> Cash Trip</button>
+														<button @click="makeNewPayment()" class="btn btn-default" type="button"><i class="ion ion-closed-captioning"></i> Card</button>
+
+														<button @click="closePreBook()" class="btn btn-shadow btn-danger" type="reset">Reset Booking</button>
+													</div>
+												</div>
+
+											</div>
+											<div v-else>
+												<form class="needs-validation" novalidate>
+
+
+													<div v-if="bookingClass.length" class="form-group row d-flex align-items-center mb-5">
+														<label class="col-lg-4 form-control-label d-flex justify-content-lg-end">Booking Class *</label>
+														<div class="col-lg-8">
+															<div class="select">
+																<select v-model="selectedBookingClass" class="custom-select form-control" required>
+
+																	<option v-for="type in bookingClass" :value="type.id">{{type.bookingClass}}</option>
+
+																</select>
+																<!-- <div class="invalid-feedback">
+																Please select an option
+															</div> -->
+															</div>
+														</div>
+													</div>
+
+													<div v-if="numberOfSeats.length" class="form-group row d-flex align-items-center mb-5">
+														<label class="col-lg-4 form-control-label">Number Of Seat</label>
+														<div class="col-sm-8">
+															<div v-for="seats in numberOfSeats" class="mb-3">
+																<!-- <div class="styled-radio"> -->
+																<input type="radio" v-model="selectedSeat" :value="seats.id" name="radio" :id="seats.id">
+																<label for="rad-1">{{seats.seats}} seater</label>
+																<!-- </div> -->
+															</div>
+
+
+														</div>
+													</div>
+
+
+
+
+													<div class="form-group row d-flex align-items-center mb-5">
+														<label class="col-lg-4 form-control-label d-flex justify-content-lg-end">Pick Up Address</label>
+														<div class="col-lg-8">
+															<input type="text" id="autocomplete" ref="pickup" class="form-control" placeholder="Lagos Airport">
+															<div id="map"></div>
+														</div>
+													</div>
+
+													<div class="form-group row d-flex align-items-center mb-5">
+														<label class="col-lg-4 form-control-label d-flex justify-content-lg-end">Destination</label>
+														<div class="col-lg-8">
+															<input type="text" id="destination" ref="dropOff" class="form-control" placeholder="Lagos Airport">
+															<div id="map"></div>
+														</div>
+													</div>
+
+
+
+													<div class="form-group row d-flex align-items-center mb-5">
+														<label class="col-lg-4 form-control-label">Pick Up Date</label>
+														<div class="col-lg-8">
+															<div class="form-group">
+																<div class="input-group">
+
+																	<input type="date" ref="pickupdate" class="form-control" id="date" placeholder="Select value">
+																</div>
+															</div>
+														</div>
+													</div>
+
+													<div class="form-group row d-flex align-items-center mb-5">
+														<label class="col-lg-4 form-control-label">Pick Up Time</label>
+														<div class="col-lg-8">
+															<div class="form-group">
+																<div class="input-group">
+
+																	<input ref="pickuptime" class="form-control" type="text" id="appt" name="appt">
+																</div>
+															</div>
+														</div>
+													</div>
+
+													<div class="form-group row d-flex align-items-center mb-5">
+														<label class="col-lg-4 form-control-label">Return Trip</label>
+														<div class="col-lg-8">
+															<div class="form-group">
+																<div class="input-group">
+
+																	<input type="checkbox" v-model="roundTrip" ref="returnTrip" class="form-control">
+																</div>
+															</div>
+														</div>
+													</div>
+
+													<!-- 													<div v-if="roundTrip" class="form-group row d-flex align-items-center mb-5"> -->
+													<!-- 														<label class="col-lg-4 form-control-label">Return Date</label> -->
+													<!-- 														<div class="col-lg-8"> -->
+													<!-- 															<div class="form-group"> -->
+													<!-- 																<div class="input-group"> -->
+
+													<!-- 																	<input type="date" ref="returndate" class="form-control" id="date" placeholder="Select value"> -->
+													<!-- 																</div> -->
+													<!-- 															</div> -->
+													<!-- 														</div> -->
+													<!-- 													</div> -->
+
+
+
+
+													<div v-if="processing">
+
+														<div class="spinner"></div>
+													</div>
+													<div v-if="!processing" class="text-right">
+														<button @click="initiatenewBooking()" class="btn btn-primary" type="button"> <i class="ion ion-closed-captioning"></i>Initiate Booking</button>
+													</div>
+												</form>
+
+											</div>
+
+										</div>
+									</div>
+									<!-- End Form -->
+								</div>
+							</div>
+
+						</div>
+
+						<!-- End Widget Body -->
+					</div>
+					<!-- End Widget 05 -->
+				</div>
+
+				<div id="edit-profile" class="modal fade">
+					<div class="modal-dialog modal-dialog-centered">
+						<div class="modal-content room-details">
+							<div class="modal-header border-0">
+								<h3 class="modal-title"><i class="la la-glass la-2x align-middle pr-2"></i>Edit Profile</h3>
+								<button type="button" class="close" data-dismiss="modal">
+									<span aria-hidden="true">×</span>
+									<span class="sr-only">close</span>
+								</button>
+							</div>
+							<div class="modal-body">
+								<div>
+									<div class="form-group row d-flex align-items-center mb-5">
+										<label class="col-lg-4 form-control-label d-flex justify-content-lg-end">Profile Name</label>
+										<div class="col-lg-8">
+											<input type="text" v-model="profileName" ref="editProfileName" class="form-control" placeholder="">
+										</div>
+									</div>
+								</div>
+
+
+							</div>
+							<div class="modal-footer border-0">
+								<button type="button" class="btn btn-shadow" data-dismiss="modal">Cancel</button>
+								<button type="button" @click="editprofile()" :disabled="isEdittingProfile" class="btn btn-gradient-01">
+									<div v-if="isEdittingProfile">Processing... </div>
+									<div v-else>Change Profile Name</div>
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+
+				<div class="col-xl-6 os-animation" data-os-animation="fadeInUp">
+					<!-- Begin Widget 06 -->
+					<div class="widget widget-05 has-shadow">
+						<!-- Begin Widget Header -->
+						<div class="widget-header bordered d-flex align-items-center">
+							<h2> My Profile</h2>
+							<div class="widget-options">
+								<div class="dropdown">
+									<button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="dropdown-toggle">
+										<i class="la la-ellipsis-h"></i>
+									</button>
+
+								</div>
+							</div>
+						</div>
+						<!-- End Widget Header -->
+						<!-- Begin Widget Body -->
+
+						<div class="widget-body no-padding hidden">
+
+							<div class="author-avatar">
+								<span class="badge-pulse-green"></span> <img src="/img/avatar.png" alt="..." class="img-fluid rounded-circle">
+							</div>
+							<div class="author-name">
+								{{profileName}} <span>{{profileEmail}}</span>
+							</div>
+
+							<div class="chart">
+								<div class="row no-margin justify-content-center">
+									<div class="col-6 col-xl-6 col-md-6 col-sm-6">
+										<div class="row no-margin align-items-center">
+											<!-- Begin Chart -->
+											<div class="col-9 no-padding">
+												<button type="button" data-toggle="modal" data-target="#edit-profile" class="btn btn-primary"> Edit Profile</button>
+											</div>
+
+											<!-- End Chart -->
+										</div>
+									</div>
+
+									<div class="col-6 col-xl-6 col-md-6 col-sm-6">
+										<div class="row no-margin align-items-center">
+											<!-- Begin Chart -->
+											<div class="col-9 no-padding">
+												<button type="button" @click="changePassword()" data-toggle="modal" data-target="#change-profile" class="btn btn-default"> Change Password</button>
+											</div>
+
+											<!-- End Chart -->
+										</div>
+									</div>
+								</div>
+							</div>
+
+
+						</div>
+						<!-- End Widget Body -->
+					</div>
+					<!-- End Widget 06 -->
+				</div>
+			</div>
+
+
+
+
+
+
+
+			<div class="row flex-row">
+
+
+				<div class="col-xl-6  os-animation" data-os-animation="fadeInUp">
+					<div class="col-xl-12 os-animation" data-os-animation="fadeInUp">
+						<!-- Begin Widget 07 -->
+						<div class="widget widget-07 has-shadow">
+							<!-- Begin Widget Header -->
+							<div class="widget-header bordered d-flex align-items-center">
+								<h2>ACTIVE TRIP</h2>
+
+							</div>
+							<!-- End Widget Header -->
+							<!-- Begin Widget Body -->
+
+							<div class="widget-body">
+								<div class="table-responsive table-scroll padding-right-10" style="max-height: 520px;">
+									<table class="table table-hover mb-0">
+										<thead>
+											<tr>
+
+
+
+												<th>Start Time</th>
+												<th>End Time</th>
+												<th>Status</th>
+												<!-- <th>Amount Paid</th> -->
+												<th>Actions</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr v-if="activeTrip.length" v-for="booking in activeTrip">
+
+												<!-- <td><span class="text-primary">{{booking.bookingUid.toUpperCase()}}</span></td> -->
+												<!-- <td></td> -->
+												<td>{{formatPHPDate(booking.startTime.date)}}</td>
+												<td>{{formatPHPDate(booking.endTime.date)}}</td>
+												<td><span style='width:100px;'><span :class='bookingStatus(booking.status.id)'> {{booking.status.status}} </span></span></td>
+
+												<td class="td-actions"> <a href="#"><i class="la la-info"></i></a></td>
+											</tr>
+
+
+
+
+
+
+										</tbody>
+									</table>
+								</div>
+							</div>
+							<!-- End Widget Body -->
+
+						</div>
+						<!-- End Widget 07 -->
+					</div>
+
+				</div>
+
+
+
+
+
+
+
+				<div class="col-xl-6 os-animation" data-os-animation="fadeInUp">
+					<!-- Begin Widget 06 -->
+					<div class="col-xl-12 os-animation" data-os-animation="fadeInUp">
+						<!-- Begin Widget 07 -->
+						<div class="widget widget-07 has-shadow">
+							<!-- Begin Widget Header -->
+							<div class="widget-header bordered d-flex align-items-center">
+								<h2>INITIALIZED BOOKING</h2>
+
+							</div>
+							<!-- End Widget Header -->
+							<!-- Begin Widget Body -->
+
+							<div class="widget-body">
+								<div class="table-responsive table-scroll padding-right-10" style="max-height: 520px;">
+									<table class="table table-hover mb-0">
+										<thead>
+											<tr>
+
+
+
+												<th>Start Time</th>
+												<!-- <th>End Time</th> -->
+												<th>Status</th>
+												<th>Amount Paid</th>
+												<th>Actions</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr v-if="initializedBooking.length" v-for="booking in initializedBooking">
+
+												<!-- <td><span class="text-primary">{{booking.bookingUid.toUpperCase()}}</span></td> -->
+												<!-- <td></td> -->
+												<td>{{formatPHPDate(booking.pickupDate.date)}}</td>
+
+												<td><span style='width:100px;'><span :class='bookingStatus(booking.status.id)'> {{booking.status.status}} </span></span></td>
+												<td>&#8358;{{amountStatus(booking.transaction)}}</td>
+												<td class="td-actions"> <a href="#"><i class="la la-info delete"></i></a></td>
+											</tr>
+
+
+
+
+
+
+										</tbody>
+									</table>
+								</div>
+							</div>
+							<!-- End Widget Body -->
+
+						</div>
+						<!-- End Widget 07 -->
+					</div>
+				</div>
+
+
+
+			</div>
+
+
+
+
+			<div id="booking-details" class="modal fade">
+				<div class="modal-dialog modal-dialog-centered">
+					<div class="modal-content room-details">
+						<div class="modal-header border-0">
+							<h3 class="modal-title"><i class="la la-glass la-2x align-middle pr-2"></i>Booking Details</h3>
+							<button type="button" class="close" data-dismiss="modal">
+								<span aria-hidden="true">×</span>
+								<span class="sr-only">close</span>
+							</button>
+						</div>
+						<div class="modal-body">
+							<div v-if="!isFetchBookingDetails">
+
+								<div class="spinner"></div>
+							</div>
+							<div v-else>
+								<?php echo $this->partial("customer-booking-details-snippet") ?>
+							</div>
+						</div>
+						<div class="modal-footer border-0">
+							<button type="button" class="btn btn-shadow" data-dismiss="modal">Cancel</button>
+							<button type="button" :disabled="isSubmittingTicket" class="btn btn-gradient-01" data-dismiss="modal">Create Ticket</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+
+
+			<!-- End Row -->
+			<div class="row flex-row">
+				<div class="col-xl-12 os-animation" data-os-animation="fadeInUp">
+					<!-- Begin Widget 07 -->
+					<div class="widget widget-07 has-shadow">
+						<!-- Begin Widget Header -->
+						<div class="widget-header bordered d-flex align-items-center">
+							<h2>Booking </h2>
+
+						</div>
+						<!-- End Widget Header -->
+						<!-- Begin Widget Body -->
+
+						<div class="widget-body">
+							<div class="table-responsive table-scroll padding-right-10" style="max-height: 520px;">
+								<table class="table table-hover mb-0">
+									<thead>
+										<tr>
+
+											<th>Order ID</th>
+											<!-- <th>Booking Type</th> -->
+											<th>Booking Class</th>
+											<th>Pick-Up Date</th>
+											<!-- <th>End Date</th> -->
+											<th><span style="width: 100px;">Status</span></th>
+											<th>Amount Paid</th>
+											<th>Actions</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr v-if="bookingHistory.length" v-for="booking in bookingHistory">
+
+											<td><a @click="getBookingDetails(booking.bookingUid)" data-toggle="modal" data-target="#booking-details"><span class="text-primary">{{booking.bookingUid.toUpperCase()}}</span></a></td>
+											<!-- <td>{{booking.bookingType.bookingType}}</td> -->
+											<td>{{booking.bookingClass.bookingClass}}</td>
+											<td>{{formatPHPDate(booking.pickupDate.date)}}</td>
+											<!-- <td>{{formatPHPDate(booking.endTime.date)}}</td> -->
+											<td><span style="width: 100px;" :class='bookingStatus(booking.status.id)'> {{booking.status.status}} </span></td>
+											<td>&#8358; {{amountStatus(booking.transaction)}}</td>
+											<td class="td-actions"><a v-if="booking.status.id == 5" @click="getBookingDetails(booking.bookingUid)" data-toggle="modal" data-target="#booking-details"><i class="la la-edit edit"></i></a> <a v-if="booking.status.id == 5" @click="onCancelBooking(booking.id)" href="#"><i class="la la-close delete"></i></a></td>
+										</tr>
+
+
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<!-- End Widget Body -->
+
+					</div>
+					<!-- End Widget 07 -->
+				</div>
+			</div>
+
+
+			<div id="support-ticket" class="modal fade">
+				<div class="modal-dialog modal-dialog-centered">
+					<div class="modal-content room-details">
+						<div class="modal-header border-0">
+							<h3 class="modal-title"><i class="la la-glass la-2x align-middle pr-2"></i>Support Ticket Form</h3>
+							<button type="button" class="close" data-dismiss="modal">
+								<span aria-hidden="true">×</span>
+								<span class="sr-only">close</span>
+							</button>
+						</div>
+						<div class="modal-body">
+							<form class="needs-validation" novalidate>
+								<div class="form-group row d-flex align-items-center mb-5">
+									<label class="col-lg-4 form-control-label d-flex justify-content-lg-end">Ticket Title</label>
+									<div class="col-lg-8">
+										<input type="text" v-model="ticketTitle" ref="ticketTitle" class="form-control" placeholder="">
+									</div>
+								</div>
+
+								<div class="form-group row d-flex align-items-center mb-5">
+									<label class="col-lg-4 form-control-label d-flex justify-content-lg-end">Ticket Message</label>
+									<div class="col-lg-8">
+										<textarea v-model="ticketMessage" ref="ticketMessage" class="form-control" placeholder=""></textarea>
+									</div>
+								</div>
+
+							</form>
+
+						</div>
+						<div class="modal-footer border-0">
+							<button type="button" class="btn btn-shadow" data-dismiss="modal">Cancel</button>
+							<button type="button" :disabled="isSubmittingTicket" @click="createTicket()" class="btn btn-gradient-01" data-dismiss="modal">Create Ticket</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+
+
+
+
+
+
+
+			<div id="ticket-details" class="modal fade">
+				<div class="modal-dialog modal-dialog-centered">
+					<div class="modal-content room-details">
+						<div class="modal-header border-0">
+							<h3 class="modal-title"><i class="la la-glass la-2x align-middle pr-2"></i>Support Messages</h3>
+							<button type="button" class="close" data-dismiss="modal">
+								<span aria-hidden="true">×</span>
+								<span class="sr-only">close</span>
+							</button>
+						</div>
+						<div class="modal-body">
+
+							<div class="col-12">
+								<!-- Begin Widget 10 -->
+								<div class="widget widget-10 has-shadow">
+									<!-- Begin Widget Header -->
+									<div class="widget-header bordered d-flex align-items-center">
+										<h2>Support Tickets</h2>
+										<div class="widget-options">
+											<!-- <div class="dropdown">
+												<button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="dropdown-toggle">
+													<i class="la la-ellipsis-h"></i>
+												</button>
+												<div class="dropdown-menu">
+													<a href="#" class="dropdown-item">
+														<i class="la la-bell-slash"></i>Disable Alerts
+													</a>
+													<a href="#" class="dropdown-item">
+														<i class="la la-edit"></i>Edit Widget
+													</a>
+													<a href="#" class="dropdown-item faq">
+														<i class="la la-question-circle"></i>FAQ
+													</a>
+												</div>
+											</div> -->
+										</div>
+									</div>
+									<!-- End Widget Header -->
+									<!-- Begin Widget Body -->
+									<div class="widget-body no-padding">
+										<ul class="ticket list-group w-100">
+											<!-- 01 -->
+											<li v-for="message in ticketdetails.messages" class="list-group-item">
+												<div class="media">
+													<!-- <div class="media-left align-self-center pr-4">
+														<img src="assets/img/avatar/avatar-02.jpg" class="user-img rounded-circle" alt="...">
+													</div> -->
+													<div class="media-body align-self-center">
+														<div class="username">
+															<h4>{{message.route.route}}</h4>
+														</div>
+														<div class="msg">
+															<p>
+																{{message.message}}
+															</p>
+														</div>
+														<div class="status"><span class="open mr-2">Open</span>(1 hour ago)</div>
+													</div>
+												</div>
+											</li>
+											<!-- End 01 -->
+
+										</ul>
+									</div>
+									<!-- End Widget Body -->
+								</div>
+								<!-- End Widget 10 -->
+							</div>
+
+						</div>
+						<div class="modal-footer border-0">
+							<button type="button" class="btn btn-shadow" data-dismiss="modal">Cancel</button>
+							<button type="button" :disabled="isSubmittingTicket" class="btn btn-gradient-01" data-dismiss="modal">Create Ticket</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row flex-row">
+				<div class="col-xl-6  os-animation" data-os-animation="fadeInUp">
+					<!-- Begin Widget 04 -->
+					<div class="widget widget-04 has-shadow">
+						<!-- Begin Widget Header -->
+						<div class="widget-header bordered d-flex align-items-center">
+							<h2>Support Tickets</h2>
+							<div class="widget-options">
+								<div class="dropdown">
+									<button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="dropdown-toggle">
+										<i class="la la-ellipsis-h"></i>
+									</button>
+									<!-- <div class="dropdown-menu">
+										<a href="#" class="dropdown-item">
+											<i class="la la-check"></i>Valid Post
+										</a>
+										<a href="#" class="dropdown-item">
+											<i class="la la-edit"></i>Edit Widget
+										</a>
+										<a href="faq.html" class="dropdown-item faq">
+											<i class="la la-question-circle"></i>FAQ
+										</a>
+									</div> -->
+								</div>
+							</div>
+						</div>
+						<!-- End Widget Header -->
+						<!-- Begin Widget Body -->
+						<div class="widget-body p-0">
+							<div class="post-container">
+
+								<div class="widget-body no-padding">
+									<ul class="ticket list-group w-100">
+										<!-- 01 -->
+										<div v-if="supportTickets.length">
+											<li v-for="ticket in supportTickets" class="list-group-item">
+
+												<div class="media">
+
+													<div class="media-body align-self-center">
+														<div class="username">
+															<h4>{{ticket.topic.toUpperCase()}}</h4>
+														</div>
+														<div class="msg">
+															<p>
+																<a href="" @click="ticketDetails(ticket.supportUid)" data-toggle="modal" data-target="#ticket-details"> {{ticket.supportUid.toUpperCase()}}</a>
+															</p>
+														</div>
+														<div class="status"><span :class="supportStatus(ticket.supportStatus.id)">{{ticket.supportStatus.status}} </span> {{statusDate(ticket.createdOn.date)}}</div>
+													</div>
+												</div>
+
+											</li>
+										</div>
+										<!-- End 01 -->
+										<li v-else class="list-group-item">
+											<div class="media">
+
+												No Ticket
+											</div>
+										</li>
+									</ul>
+								</div>
+
+							</div>
+							<!-- Begin Write Comment -->
+							<div class="input-group mt-5">
+								<button data-toggle="modal" data-target="#support-ticket" class="btn btn-primary btn-block"> OPEN TICKETS</button>
+							</div>
+							<!-- End Write Comment -->
+						</div>
+						<!-- End Widget Body -->
+					</div>
+					<!-- End Widget 04 -->
+				</div>
+
+
+
+
+
+
+				<div class="col-xl-6  os-animation" data-os-animation="fadeInUp">
+					<!-- Begin Widget 04 -->
+					<div class="widget widget-04 has-shadow">
+						<!-- Begin Widget Header -->
+						<div class="widget-header bordered d-flex align-items-center">
+							<h2>Feedback</h2>
+							<div class="widget-options">
+								<div class="dropdown">
+									<button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="dropdown-toggle">
+										<i class="la la-ellipsis-h"></i>
+									</button>
+									<!-- <div class="dropdown-menu">
+										<a href="#" class="dropdown-item">
+											<i class="la la-check"></i>Valid Post
+										</a>
+										<a href="#" class="dropdown-item">
+											<i class="la la-edit"></i>Edit Widget
+										</a>
+										<a href="faq.html" class="dropdown-item faq">
+											<i class="la la-question-circle"></i>FAQ
+										</a>
+									</div> -->
+								</div>
+							</div>
+						</div>
+						<!-- End Widget Header -->
+						<!-- Begin Widget Body -->
+						<div class="widget-body p-0">
+							<div class="post-container">
+
+								<div class="widget-body no-padding">
+									<ul class="ticket list-group w-100">
+
+									</ul>
+								</div>
+
+							</div>
+							<!-- Begin Write Comment -->
+							<div class="input-group mt-5">
+
+							</div>
+							<!-- End Write Comment -->
+						</div>
+						<!-- End Widget Body -->
+					</div>
+					<!-- End Widget 04 -->
+				</div>
+
+
+
+			</div>
+			<!-- End Row -->
+		</div>
+		<!-- End Container -->
+		<!-- Begin Page Footer-->
+		<footer class="main-footer">
+			<div class="container">
+				<div class="row">
+					<div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 d-flex align-items-center justify-content-xl-start justify-content-lg-start justify-content-md-start justify-content-center">
+						<p class="text-gradient-02">Design By I-Manager Solutions</p>
+					</div>
+					<div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 d-flex align-items-center justify-content-xl-end justify-content-lg-end justify-content-md-end justify-content-center">
+
+					</div>
+				</div>
+			</div>
+		</footer>
+		<!-- End Page Footer -->
+		<a href="#" class="go-top"><i class="la la-arrow-up"></i></a>
+		<!-- Offcanvas Sidebar -->
+		<div class="off-sidebar from-right">
+			<div class="off-sidebar-container">
+				<header class="off-sidebar-header">
+					<ul class="button-nav nav nav-tabs mt-3 mb-3 ml-3" role="tablist" id="weather-tab">
+						<li><a class="active" data-toggle="tab" href="#messenger" role="tab" id="messenger-tab">Messages</a></li>
+						<li><a data-toggle="tab" href="#today" role="tab" id="today-tab">Today</a></li>
+					</ul>
+					<a href="#off-canvas" class="off-sidebar-close"></a>
+				</header>
+				<div class="off-sidebar-content offcanvas-scroll auto-scroll">
+					<div class="tab-content">
+						<!-- Begin Messenger -->
+
+						<!-- End Messenger -->
+						<!-- Begin Today -->
+						<div role="tabpanel" class="tab-pane fade" id="today" aria-labelledby="today-tab">
+							<!-- Begin Today Stats -->
+							<div class="sidebar-heading pt-0">Today</div>
+
+							<!-- End Today Stats -->
+							<!-- Begin Friends -->
+							<div class="sidebar-heading">Friends</div>
+
+							<!-- End Friends -->
+							<!-- Begin Settings -->
+							<div class="sidebar-heading">Settings</div>
+
+							<!-- End Settings -->
+						</div>
+						<!-- End Today -->
+					</div>
+				</div>
+				<!-- End Offcanvas Container -->
+			</div>
+			<!-- End Offsidebar Container -->
+		</div>
+		<!-- End Offcanvas Sidebar -->
+	</div>
+	<!-- End Content -->
+</div>
+<!-- Begin Page Snippets -->
+<script src="https://checkout.flutterwave.com/v3.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBobkXMM-uzqQLM5pqs_n7prJKJJ4-JK5I&callback=initMap&libraries=places&v=weekly" defer></script>
+<script src="/admin/assets/vendors/js/nicescroll/nicescroll.min.js"></script>
+<script src="/admin/assets/vendors/js/app/app.min.js"></script>
+<script src="/admin/assets/js/components/validation/validation.min.js"></script>
+<script src="js/jquery.timepicker.min.js"></script>
+
+
+<!-- End Page Snippets -->
+<script>
+	jQuery(document).ready(function($) {
+		$('#appt').timepicker({
+			'step': 15,
+			'scrollDefault': 'now',
+			'forceRoundTime': true
+		});
+	});
+	let autocomplete;
+	let destination;
+	let place;
+	let bounds;
+
+
+
+	function initMap() {
+		const map = new google.maps.Map(document.getElementById("map"), {
+			zoom: 4,
+			center: {
+				lat: -33,
+				lng: 151
+			},
+			zoom: 8,
+			zoomControl: false
+		});
+
+		// Create the autocomplete object, restricting the search predictions to
+		// geographical location types.
+		autocomplete = new google.maps.places.Autocomplete(
+			document.getElementById("autocomplete"), {
+				// types: ["geocode"],
+				componentRestrictions: {
+					'country': ['ng']
+				},
+				fields: ['place_id', 'geometry', 'formatted_address']
+			}
+		);
+
+		destination = new google.maps.places.Autocomplete(
+			document.getElementById("destination"), {
+				// types: ["geocode"],
+				componentRestrictions: {
+					'country': ['ng']
+				},
+				fields: ['place_id', 'geometry', 'formatted_address', "address_components", "icon", "name"]
+			}
+		);
+		// When the user selects an address from the drop-down
+		// zoom to the select location and add a marker.
+		autocomplete.addListener("place_changed", addCustomerLocation);
+		destination.addListener("place_changed", addDestinationLocation);
+	}
+
+	function addCustomerLocation() {
+		// Get the place details from the autocomplete object.
+		place = autocomplete.getPlace();
+		console.log(place);
+
+
+		var lat = place.geometry.location.lat();
+		var lon = place.geometry.location.lng();
+
+
+
+		cutomerboard.pickUpAddress = place.formatted_address;
+
+		// cutomerboard.destinationAddress= 
+		cutomerboard.pickUpLongitude = lat;
+
+		cutomerboard.pickUpLatitude = lon;
+
+		cutomerboard.pickUpPlaceId = place.place_id;
+
+
+		// cutomerboard.pickUpTime:
+
+	}
+
+	function addDestinationLocation() {
+		dropOff = destination.getPlace();
+
+
+		var dropLat = dropOff.geometry.location.lat();
+		var dropLong = dropOff.geometry.location.lng();
+
+		cutomerboard.destinationAddress = dropOff.formatted_address;
+		cutomerboard.destinationLongitude = dropLat;
+		cutomerboard.destinationLatitude = dropLong;
+		cutomerboard.destinationPlaceId = dropOff.place_id;
+	}
+
+	function makeFlutterwavePayment() {
+
+		// if (subs.postPayment) {
+		FlutterwaveCheckout({
+			public_key: cutomerboard.public_key,
+			tx_ref: cutomerboard.tx_ref,
+			amount: cutomerboard.amountPayable,
+			currency: "NGN",
+			country: "NG",
+			payment_options: "card,account",
+			customer: {
+				email: cutomerboard.profileEmail,
+				name: cutomerboard.profileName,
+			},
+			subaccounts: [{
+				id: "RS_5C928897803C0EE347EF69B83E409BF5", // This assumes you have setup your commission on the dashboard.
+			}],
+			callback: function(response) { // specified callback function
+				if (response.status == "successful") {
+					cutomerboard.tx_ref = response.tx_ref;
+					cutomerboard.amountPayed = response.amount;
+					cutomerboard.concludeNewPayment();
+				} else {
+					// set error
+				}
+			},
+			customizations: {
+				title: "BAU CARS LIMITED",
+				description: "BAU cars booking payment",
+				logo: cutomerboard.companyLogo
+
+			},
+		})
+		// }?
+	}
+
+	Vue.use(VueToast, {
+		// One of options
+		position: 'top'
+	});
+
+
+
+
+
+	Date.prototype.datee = function() {
+		var mm = "";
+
+		if (this.getMonth() == 0) {
+			mm = "January"
+		};
+		if (this.getMonth() == 1) {
+			mm = "February"
+		};
+		if (this.getMonth() == 2) {
+			mm = "March"
+		};
+		if (this.getMonth() == 3) {
+			mm = "April"
+		};
+		if (this.getMonth() == 4) {
+			mm = "May"
+		};
+		if (this.getMonth() == 5) {
+			mm = "June"
+		};
+		if (this.getMonth() == 6) {
+			mm = "July"
+		};
+		if (this.getMonth() == 7) {
+			mm = "August"
+		};
+		if (this.getMonth() == 8) {
+			mm = "September"
+		};
+		if (this.getMonth() == 9) {
+			mm = "October"
+		};
+		if (this.getMonth() == 10) {
+			mm = "November"
+		};
+		if (this.getMonth() == 11) {
+			mm = "December"
+		};
+		var dd = this.getDate();
+
+		return [this.getFullYear(),
+			(mm > 9 ? '' : ' ') + mm,
+			(dd > 9 ? '' : ' ') + " " + dd
+		].join('');
+	};
+
+	let cutomerboard = new Vue({
+		el: "#cutomerPage",
+		data() {
+			return {
+				//Payment
+				public_key: "",
+				tx_ref: "",
+				amountPayable: 0,
+				//Profile
+				profileName: "",
+				profileDob: "",
+				profilePhone: "",
+				// profileEmail:""
+				profileEmail: "",
+				test: "This test",
+				bookingHistory: "",
+				gettingBookingHistory: true,
+
+				isBookingForm: false, // identifies if the booking form should show
+				bookingServiceType: [],
+				bookingClass: [],
+				billingMethod: [],
+
+				// bookingDetails
+				processing: false,
+				isSubmittingBookingForm: false,
+				bookingDatetime: "",
+				selectedServiceType: 50,
+				selectedBookingClass: 10,
+				selectedBillingMethod: 10,
+
+
+
+
+				// Edited 
+				editedServiceType: "",
+
+				// Booking
+				initializedBooking: [],
+				activeTrip: [],
+				bookingDetails: "",
+				isFetchBookingDetails: false,
+				isBookingEdit: false,
+
+				editabledBooking: false,
+
+				// Support
+
+				supportTickets: [],
+				ticketTitle: "",
+				ticketMessage: "",
+				ticketdetails: {},
+				isSubmittingTicket: false,
+
+				//Profile
+				isEdittingProfile: false,
+
+				// New Booking
+
+
+				isCashPayment: false,
+
+
+				initiatedPayment: false,
+				newBooking: {},
+				selectedSeat: 10,
+				numberOfSeats: [],
+
+				pickUpAddress: '',
+				destinationAddress: '',
+				pickUpLongitude: '',
+				destinationLongitude: '',
+				pickUpLatitude: '',
+				destinationLatitude: '',
+				pickUpPlaceId: '',
+				destinationPlaceId: '',
+				pickUpTime: '',
+
+
+				isPreBooking: false,
+
+				bookingPrice: "",
+				estimatedTime: "",
+
+				roundTrip: false,
+
+
+
+
+
+				companyLogo: "",
+
+
+
+			}
+		},
+
+		filters: {
+			bookingStatus(value) {
+				if (value.id == 5) {
+					return ""
+				}
+			}
+		},
+
+		computed: {
+			hederTitle() {
+				if (this.isBookingForm) {
+					return "Booking Form"
+				} else {
+					return "My Profile";
+				}
+			},
+
+
+
+
+
+			showBookingForm() {
+				this.isBookingForm = true;
+			},
+
+			showProfile() {
+				this.isBookingForm = false;
+			}
+
+		},
+
+		methods: {
+
+			formatPrice(value) {
+				let val = (value / 1).toFixed(2).replace('.', ',')
+				return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+			},
+
+			seatStatus(bookClass, seat) {
+				if (bookClass == 100 && seat == 20) {
+					return false;
+				}
+			},
+
+			amountStatus(amount) {
+				if (amount == null) {
+					return "Cash Trip";
+				} else {
+					return this.formatPrice(amount.amount);
+				}
+			},
+
+			toggleBookingForm() {
+				this.isBookingForm = !this.isBookingForm;
+			},
+
+			bookingStatus(value) {
+				if (value == 5 || value == 10 || value == 20 || value == 30) {
+					return "badge-text badge-text-small success";
+				} else if (value == 100 || value == 200 || value == 300) {
+					return "badge-text badge-text-small  danger";
+				} else if (value == 600 || value == 500 || value == 501) {
+					return "badge-text badge-text-small info";
+				}
+			},
+
+			supportStatus(value) {
+				if (value == 10) {
+					return "badge-text badge-text-small success";
+				} else if (value == 20) {
+					return "badge-text badge-text-small  danger";
+				} else if (value == 30) {
+					return "badge-text badge-text-small info";
+				}
+			},
+
+			statusDate(date) {
+				dat = new Date(date);
+				return dat.datee();
+			},
+
+
+			formatPHPDate(date) {
+				// myDate = date.replace(/-/g, "/");
+				return new Date(date);
+
+			},
+
+			formatPrice(value) {
+				let val = (value / 1).toFixed(2).replace(',', '.')
+				return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+			},
+			// Begin Present function 
+			getBookingHistory() {
+
+				axios.get("/customer/booking-history").then(res => {
+					if (res.status == 200) {
+						this.bookingHistory = res.data.data;
+						this.gettingBookingHistory = false;
+					}
+				}).catch(err => {
+
+				});
+			},
+
+			editprofile() {
+				if (this.$refs.editProfileName.value == "") {
+
+				} else {
+					this.isEdittingProfile = true;
+					let formData = new FormData();
+					formData.append("fullname", this.$refs.editProfileName.value);
+					axios.post("/customer/editprofile", formData).then(res => {
+						if (res.status == 201) {
+							window.location.reload();
+							this.isEdittingProfile = false;
+						}
+					}).catch(err => {
+
+					});
+				}
+			},
+
+			getProfile() {
+				axios.get("/customer/profile").then(res => {
+					if (res.status == 200) {
+
+						this.profileName = res.data.datas[0].fullName;
+						this.profileEmail = res.data.datas[0].email;
+					}
+				}).catch();
+			},
+
+			getBookingServiceType() {
+				axios.get("/customer/booking-service-type").then(res => {
+					if (res.status == 200) {
+						this.bookingServiceType = res.data.data;
+					}
+				}).catch();
+			},
+
+
+			getBookingClass() {
+				axios.get("/customer/booking-class").then(res => {
+					if (res.status == 200) {
+						this.bookingClass = res.data.data
+					}
+				}).catch();
+			},
+
+			getBillingMethod() {
+				axios.get("/customer/billing-method").then(res => {
+					if (res.status == 200) {
+						this.billingMethod = res.data.data;
+					}
+				}).catch();
+			},
+
+			//gets all pending initiated booking
+			getInitiatedBooking() {
+				axios.get("/customer/initiated-booking").then(res => {
+					if (res.status == 200) {
+						this.initializedBooking = res.data.data
+					}
+
+				}).catch();
+			},
+
+			getActiveTrip() {
+				axios.get("/customer/activebooking").then(res => {
+					if (res.status == 200) {
+						this.activeTrip = res.data.data;
+					}
+				}).catch();
+			},
+
+
+			makePayment() {
+				this.processing = true;
+				if (this.$refs.pickup.value == "") {
+					swal({
+						title: "Empty pickup address",
+						text: "PLease fill a pickup address",
+						icon: "error",
+						button: "Continue!",
+					}).then(res => {
+						this.processing = false;
+					})
+				} else {
+					let formData = new FormData();
+					formData.append("bookingDate", this.$refs.bookingDatetime.value);
+					formData.append("pickupaddress", this.$refs.pickup.value);
+					formData.append("selectedService", this.selectedServiceType);
+					formData.append("selectedBookingClass", this.selectedBookingClass);
+					formData.append("selectedBillingMethod", this.selectedBillingMethod);
+					axios.post("/customer/initiatepayment", formData).then(res => {
+						if (res.status == 200) {
+							this.bookingPrice = res.data.price;
+							this.processing = false;
+							this.public_key = res.data.public_key;
+							this.tx_ref = res.data.txref;
+							this.amountPayable = res.data.price;
+
+							makeFlutterwavePayment();
+						}
+					}).catch();
+				}
+			},
+
+			concludepayment() {
+
+			},
+
+			calculatePrice() {
+
+				this.processing = true;
+
+
+				let formData = new FormData();
+				formData.append("bookingDate", this.$refs.bookingDatetime.value);
+
+				formData.append("selectedService", this.selectedServiceType);
+				formData.append("selectedBookingClass", this.selectedBookingClass);
+				formData.append("selectedBillingMethod", this.selectedBillingMethod);
+				axios.post("/customer/calculate-price", formData).then(res => {
+					if (res.status == 200) {
+						this.bookingPrice = res.data.price;
+						this.processing = false;
+					}
+				}).catch();
+
+			},
+
+
+			// Support
+
+			getSupportSnippet() {
+				axios.get("/customer/getsupportsnippet").then(res => {
+					if (res.status == 200) {
+						this.supportTickets = res.data.data;
+					}
+				});
+			},
+
+			ticketDetails(id) {
+				axios.get("/customer/getticketdetails/" + id).then(res => {
+					if (res.status == 200) {
+						this.ticketdetails = res.data.data
+					}
+				}).catch();
+			},
+
+			createTicket() {
+				if (this.ticketTitle == "" || this.ticketMessage == "") {
+
+				} else {
+					this.isSubmittingTicket = true;
+					let formData = new FormData();
+					formData.append("title", this.ticketTitle);
+					formData.append("message", this.ticketMessage);
+					axios.post("/customer/createsupportticket", formData).then(res => {
+						this.getSupportSnippet();
+
+						swal({
+							title: "Support Created",
+							text: "A support ticket has been created",
+							icon: "success",
+							button: "Continue!",
+						}).then(res => {
+							window.location.reload();
+
+						});
+
+					}).catch(err => {
+						this.isSubmittingTicket = false;
+					})
+				}
+
+			},
+
+
+
+			// Booking
+			onCancelBooking(id) {
+				swal({
+					title: "Are you Sure",
+					text: "You are about to cancel your booking",
+					icon: "warning",
+					button: "Continue!",
+				}).then(function(isConfirm) {
+					if (isConfirm) {
+						let formData = new FormData();
+						formData.append("bookingId", id);
+						axios.post("/customer/cancelbooking", formData).then(res => {
+							if (res.status == 201) {
+								window.location.reload();
+							}
+						}).catch(err => {
+							swal({
+								title: "Error",
+								text: err.response.data.messages,
+								icon: "error",
+								button: "YES"
+							})
+						});
+					}
+				});
+			},
+
+			cancelbooking(id) {
+				// console.log(id);
+				let formData = new FormData();
+				formData.append("bookingId", id);
+				axios.post("/customer/cancelbooking", formData).then(res => {
+					if (res.status == 201) {
+						window.location.reload();
+					}
+				}).catch(err => {
+
+				});
+			},
+
+
+			createBooking() {
+				// this.isSubmittingBookingForm = true;
+				this.processing = true;
+				if (this.selectedServiceType != "") {
+
+					let formData = new FormData();
+					formData.append("bookingDate", this.$refs.bookingDatetime.value);
+					formData.append("selectedService", this.selectedServiceType);
+					formData.append("selectedBookingClass", this.selectedBookingClass);
+					formData.append("selectedBillingMethod", this.selectedBillingMethod);
+
+					axios.post("/customer/create-booking", formData).then(res => {
+						if (res.status == 201) {
+							// toast alert
+							this.$toast.open({
+								message: res.data.messages,
+								type: "success",
+								duration: 20000,
+								dismissible: true
+							});
+
+							this.isSubmittingBookingForm = false;
+							this.getInitiatedBooking();
+							this.getBookingHistory();
+						}
+					}).catch(err => {
+
+					});
+				} else {
+					this.$toast.open({
+						message: res.data.messages,
+						type: "error",
+						duration: 20000,
+						dismissible: true
+					})
+				}
+			},
+
+
+			getBookingDetails(id) {
+				this.isFetchBookingDetails = false;
+				axios.get("/customer/getbookingdetails/" + id).then(res => {
+					if (res.status == 200) {
+						this.isFetchBookingDetails = true;
+						this.bookingDetails = res.data.data;
+
+					}
+				}).catch();
+			},
+
+			changeToEditBooking() {
+				this.isBookingEdit = true;
+			},
+
+
+			// New Bookings
+
+			getNumberOfSeats() {
+				axios.get("/bookings/bookings/numberofseats").then(res => {
+					if (res.status == 200) {
+						this.numberOfSeats = res.data.data;
+					}
+				}).catch();
+			},
+
+
+
+
+
+			initiatenewBooking() {
+				this.processing = true;
+				console.log(this.roundTrip);
+				if (this.pickUpAddress == "" || this.destinationAddress == "" || this.pickUpPlaceId == "" || this.destinationPlaceId == "" || this.$refs.pickupdate.value == "" || this.$refs.pickuptime.value == "") {
+					swal({
+						title: "Empty Data",
+						text: "One of your field is empty",
+						icon: "error",
+						button: "Continue!",
+					});
+					this.processing = false;
+				} else {
+
+					let formData = new FormData();
+					formData.append("pickUpAddress", this.pickUpAddress);
+					formData.append("destinationAddress", this.destinationAddress);
+					formData.append("pickUpLongitude", this.pickUpLongitude);
+					formData.append("destinationLongitude", this.destinationLongitude);
+					formData.append("pickUpLatitude", this.pickUpLatitude);
+					formData.append("destinationLatitude", this.destinationLatitude);
+					formData.append("pickUpPlaceId", this.pickUpPlaceId);
+					formData.append("destinationPlaceId", this.destinationPlaceId);
+					formData.append("pickUpDate", this.$refs.pickupdate.value);
+					formData.append("pickUpTime", this.$refs.pickuptime.value);
+					formData.append("numberOfSeats", this.selectedSeat);
+					formData.append("bookingClass", this.selectedBookingClass);
+					formData.append("returnTrip", this.roundTrip);
+					// if(this.roundTrip == true){
+					// formData.append("returndate", this.$refs.returndate.value);
+					// }
+					axios.post("/bookings/bookings/initiate-booking", formData).then(res => {
+						if (res.status == 201) {
+							this.isPreBooking = true;
+							this.bookingPrice = res.data.price;
+							this.estimatedTime = res.data.time;
+							this.pickUpAddress = this.pickUpAddress;
+							this.destinationAddress = this.destinationAddress;
+
+							this.processing = false;
+						}
+					}).catch(err => {
+
+					});
+				}
+			},
+
+			closePreBook() {
+				window.location.reload();
+			},
+
+			cashPayment() {
+				this.isCashPayment = true;
+				let formData = new FormData();
+				// formData.append();
+				axios.post("/bookings/bookings/cashpayment", formData).then(res => {
+					if (res.status == 201) {
+						window.location.reload();
+					}
+				}).catch();
+			},
+			//cashpayment
+
+			makeNewPayment() {
+				this.initiatedPayment = true;
+				axios.get("/bookings/bookings/makepayment").then(res => {
+					if (res.status == 200) {
+						this.public_key = res.data.public_key;
+						this.tx_ref = res.data.txref;
+						this.amountPayable = res.data.price;
+						this.companyLogo = res.data.logo;
+						makeFlutterwavePayment();
+						this.initiatedPayment = false;
+					}
+				}).catch()
+			},
+
+
+
+			concludeNewPayment() {
+				let formData = new FormData();
+				formData.append("txRef", this.tx_ref);
+				formData.append("amountPayed", this.amountPayed);
+
+				axios.post("/bookings/bookings/completebooking", formData).then(res => {
+					if (res.status == 201) {
+						location.reload();
+					}
+				}).catch(err => {
+					axios.post("/customer/booking-error").then().catch();
+				});
+			}
+
+
+		},
+
+		mounted() {
+			this.getBookingHistory();
+			this.getProfile();
+			this.getActiveTrip();
+			this.getInitiatedBooking();
+			this.getBookingServiceType();
+			this.getBookingClass();
+			this.getBillingMethod();
+			this.getSupportSnippet();
+			this.getNumberOfSeats();
+		},
+	});
+</script>

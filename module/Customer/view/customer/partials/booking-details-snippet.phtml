@@ -1,0 +1,157 @@
+<?php
+?>
+<div class="col-xl-12">
+	<button @click="changeToEditBooking()" class="btn btn-block btn-primary"> Edit Booking</button>
+</div>
+<div class="col-xl-12"><button @click="changeToEditBooking()" class="btn btn-block btn-success"> FeedBack</button></div>
+<div v-if="isBookingEdit">
+
+	
+	<div class="form-group row mt-3 mr-0 mb-3 ml-0">
+		<div class="col-xl-12">
+			<label class="form-control-label">Service Class</label>
+			<select ref="editedBookingClass" class="custom-select form-control" required>
+
+				<option v-for="type in bookingClass" :value="type.id">{{type.bookingClass}}</option>
+
+			</select>
+		</div>
+	</div>
+	<div class="form-group row mt-3 mr-0 mb-3 ml-0">
+		<div class="col-xl-12">
+			<label class="form-control-label">Pick Up Address</label>
+			<input type="text" ref="editedPickup" class="form-control" placeholder="Lagos Airport">
+		</div>
+	</div>
+
+	<div class="form-group row mt-3 mr-0 mb-3 ml-0">
+		<div class="col-xl-12">
+			<label class="form-control-label">Pick Up Time</label>
+			<input id="" type="text" id="datetime" class="form-control">
+		</div>
+	</div>
+</div>
+<div v-else>
+
+	<div class="col-xl-12">
+
+		<div class="widget has-shadow">
+			<div class="widget-header bordered no-actions d-flex align-items-center">
+				<h4>Booking Information</h4>
+			</div>
+			<div class="widget-body">
+				<div class="table-responsive">
+					<table class="table table-bordered mb-0">
+
+						<tbody>
+							<tr>
+								<th>Booking Class</th>
+								<td>{{bookingDetails.bookingClass.bookingClass}}</td>
+
+							</tr>
+
+							
+							<tr>
+								<th>Pick Up Address</th>
+								<td>{{bookingDetails.pickUpAddress}}</td>
+
+							</tr>
+							
+							<tr>
+								<th>Destination Address</th>
+								<td>{{bookingDetails.destination}}</td>
+
+							</tr>
+
+							
+
+							<tr>
+								<th>Pick Up Date</th>
+								<td>{{formatPHPDate(bookingDetails.pickupDate.date)}}</td>
+
+							</tr>
+
+							
+
+							<tr>
+								<th>Status</th>
+								<td><span style="width: 100px;" :class='bookingStatus(bookingDetails.status.id)'> {{bookingDetails.status.status}} </span></td>
+
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+		<!-- End Border -->
+	</div>
+
+	<div class="col-xl-12" v-if="bookingDetails.transaction != null">
+
+		<div class="widget has-shadow">
+			<div class="widget-header bordered no-actions d-flex align-items-center">
+				<h4>Transaction Information</h4>
+			</div>
+			<div class="widget-body">
+				<div class="table-responsive">
+					<table class="table table-bordered mb-0">
+
+						<tbody>
+							<tr>
+								<th>Amount Paid</th>
+								<td>&#8358;{{formatPrice(bookingDetails.transaction.amount)}}</td>
+
+							</tr>
+							<tr>
+								<th>Transaction reference</th>
+								<td>{{bookingDetails.transaction.txRef}}</td>
+
+							</tr>
+
+							<tr>
+								<th>Paid On</th>
+								<td>{{formatPHPDate(bookingDetails.transaction.createdOn.date)}}</td>
+
+							</tr>
+
+
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+		<!-- End Border -->
+	</div>
+	<div v-if="bookingDetails.assignedDriver != null" class="col-xl-12">
+
+		<div class="widget has-shadow">
+			<div class="widget-header bordered no-actions d-flex align-items-center">
+				<h4>Assigned Driver </h4>
+			</div>
+			<div class="widget-body">
+				<div class="table-responsive">
+					<table class="table table-bordered mb-0">
+
+						<tbody>
+							<tr>
+								<th>Driver Name</th>
+								<td>&#8358;{{bookingDetails.assignedDriver.user.fullName}}</td>
+
+							</tr>
+							<tr>
+								<th>Driver Number</th>
+								<td>{{bookingDetails.assignedDriver.user.phoneNumber}}</td>
+
+							</tr>
+
+
+
+
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+		<!-- End Border -->
+	</div>
+</div>

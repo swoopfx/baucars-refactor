@@ -17,15 +17,19 @@ use Laminas\ServiceManager\FactoryInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Mail\Transport\Smtp;
 use Laminas\Mail\Transport\SmtpOptions;
+use Laminas\ServiceManager\Factory\FactoryInterface as FactoryFactoryInterface;
+use Psr\Container\ContainerInterface;
 
-class MailTransportFactory implements FactoryInterface
+class MailTransportFactory implements FactoryFactoryInterface
 {
 
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null)
     {
-        $config = $serviceLocator->get('Config');
+        $config = $container->get('Config');
         $transport = new Smtp();
         $transport->setOptions(new SmtpOptions($config['mail']['transport']['options']));
         return $transport;
     }
+
+    
 }

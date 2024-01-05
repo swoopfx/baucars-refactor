@@ -18,6 +18,20 @@ class RedirectPluginFactory implements FactoryFactoryInterface
 
     public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null)
     {
+        $plugin = new RedirectPlugin();
+        /**
+         * 
+         * @var GeneralService $generalService
+         */
+        $generalService = $container->get("General\Service\GeneralService");
+        $auth  = $generalService->getAuth();
+        
+        $redirect = $container
+        ->get('ControllerPluginManager')
+        ->get('redirect');
+        
+        $plugin->setAuth($auth)->setRedirect($redirect);
+        return $plugin;
         
     }
 
@@ -38,20 +52,7 @@ class RedirectPluginFactory implements FactoryFactoryInterface
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         
-       $plugin = new RedirectPlugin();
-       /**
-        * 
-        * @var GeneralService $generalService
-        */
-       $generalService = $serviceLocator->getServiceLocator()->get("General\Service\GeneralService");
-       $auth  = $generalService->getAuth();
-       
-       $redirect = $serviceLocator->getServiceLocator()
-       ->get('ControllerPluginManager')
-       ->get('redirect');
-       
-       $plugin->setAuth($auth)->setRedirect($redirect);
-       return $plugin;
+      
     }
 }
 
